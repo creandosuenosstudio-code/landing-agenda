@@ -686,12 +686,13 @@ async function submitBooking(){
   const localTimeStr = fmtLocalTime(startDT);
   const tzLabel = getUserTZLabel();
   const dateStr=`${DAYS[selDate.getDay()]} ${selDate.getDate()} de ${MONTHS[selDate.getMonth()]} de ${selDate.getFullYear()}`;
+  const dateISO=`${selDate.getFullYear()}-${String(selDate.getMonth()+1).padStart(2,'0')}-${String(selDate.getDate()).padStart(2,'0')}`;
   const timeStr=`${localTimeStr} (${tzLabel}) · ${fmtTime(selSlot)} hora Colombia`;
   try{
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name, email, phone, inversion:inv, carrera, date:dateStr, time:timeStr, startISO:startDT.toISOString()})
+      body: JSON.stringify({name, email, phone, inversion:inv, carrera, date:dateStr, dateISO:dateISO, time:timeStr, startISO:startDT.toISOString()})
     });
     hideOverlay();
     // Redirigir a página de confirmación con WhatsApp
