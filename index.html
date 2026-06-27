@@ -414,12 +414,18 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
   <a href="mailto:creandosuenosstudio@gmail.com">creandosuenosstudio@gmail.com</a>
 </footer>
 
-<script src="https://player.vimeo.com/api/player.js" defer></script>
 <script>
-const vimeoPlayer = new Vimeo.Player(document.getElementById('vimeoPlayer'));
-vimeoPlayer.ready().then(()=>{
-  vimeoPlayer.setPlaybackRate(1.3).catch(()=>{});
-});
+// Vimeo se inicializa después de lazy load
+function initVimeoPlayer() {
+  try {
+    if(typeof Vimeo === 'undefined') return;
+    const iframe = document.getElementById('vimeoPlayer');
+    if(iframe && iframe.src && iframe.src !== 'about:blank') {
+      const player = new Vimeo.Player(iframe);
+      player.ready().then(()=>{ player.setPlaybackRate(1.3).catch(()=>{}); });
+    }
+  } catch(e) {}
+}
 
 const APPS_SCRIPT_URL = 'https://hook.us2.make.com/4a6anymcmwzqr2xs7pxjjjy0g47k8kjx';
 const STUDIO_EMAIL = 'creandosuenosstudio@gmail.com';
@@ -526,7 +532,16 @@ function renderCalendar(){
   }
 }
 
-function changeMonth(dir){curDate.setMonth(curDate.getMonth()+dir);renderCalendar();}
+function changeMonth(dir){
+  const newDate = new Date(curDate);
+  newDate.setMonth(newDate.getMonth()+dir);
+  const today = new Date();
+  // No ir antes del mes actual
+  if(newDate.getFullYear() < today.getFullYear() || 
+    (newDate.getFullYear() === today.getFullYear() && newDate.getMonth() < today.getMonth())) return;
+  curDate = newDate;
+  renderCalendar();
+}
 
 function selectDay(date){
   selDate=date;selSlot=null;
@@ -635,6 +650,15 @@ renderCalendar();
 </script>
 
 <script>
+// Load Vimeo SDK then lazy load iframes
+const vimeoScript = document.createElement('script');
+vimeoScript.src = 'https://player.vimeo.com/api/player.js';
+vimeoScript.onload = function() {
+  // Init main video player
+  setTimeout(initVimeoPlayer, 500);
+};
+document.head.appendChild(vimeoScript);
+
 // Lazy load iframes when they enter viewport
 const lazyIframes = document.querySelectorAll('iframe[data-src]');
 const iframeObserver = new IntersectionObserver((entries) => {
@@ -642,20 +666,15 @@ const iframeObserver = new IntersectionObserver((entries) => {
     if(entry.isIntersecting) {
       const iframe = entry.target;
       iframe.src = iframe.dataset.src;
+      if(iframe.id === 'vimeoPlayer') {
+        iframe.addEventListener('load', () => setTimeout(initVimeoPlayer, 1000));
+      }
       iframeObserver.unobserve(iframe);
     }
   });
 }, { rootMargin: '200px' });
 
 lazyIframes.forEach(iframe => iframeObserver.observe(iframe));
-
-// Init Vimeo player for main video after it loads
-document.getElementById('vimeoPlayer').addEventListener('load', function() {
-  if(typeof Vimeo !== 'undefined') {
-    const player = new Vimeo.Player(this);
-    player.ready().then(() => player.setPlaybackRate(1.3).catch(() => {}));
-  }
-});
 </script>
 </body>
 </html>
