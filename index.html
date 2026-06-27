@@ -616,10 +616,14 @@ async function selectDay(date){
     if(resp.ok) {
       const data = await resp.json();
       let slots = data.slots;
-      // Make puede devolver array, objeto {1:"09:30"} o string
+      // Make puede devolver varios formatos
       if(slots && !Array.isArray(slots)) {
-        if(typeof slots === 'object') slots = Object.values(slots);
-        else if(typeof slots === 'string') slots = [slots];
+        if(typeof slots === 'object') {
+          // Formato {key:0, value:{"1":"09:30"}} de toArray()
+          if(slots.value !== undefined) slots = slots.value;
+          // Formato {"1":"09:30"}
+          if(typeof slots === 'object' && !Array.isArray(slots)) slots = Object.values(slots);
+        } else if(typeof slots === 'string') slots = [slots];
       }
       if(slots && Array.isArray(slots) && slots.length > 0) {
         const key = date.toDateString();
