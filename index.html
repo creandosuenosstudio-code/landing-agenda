@@ -428,6 +428,7 @@ function initVimeoPlayer() {
 }
 
 const APPS_SCRIPT_URL = 'https://hook.us2.make.com/4a6anymcmwzqr2xs7pxjjjy0g47k8kjx';
+const AVAILABILITY_URL = 'https://hook.us2.make.com/xh2aztgluf5dh2gjyyg73rrm4zo4nlek';
 const STUDIO_EMAIL = 'creandosuenosstudio@gmail.com';
 let curDate = new Date();
 let selDate = null, selSlot = null;
@@ -472,10 +473,25 @@ const MIN_HOURS_AHEAD = 4;
 function getSlotsForDate(date) {
   const dow = date.getDay();
   const slots = [];
-  const endH = dow === 6 ? 13 : 17;
-  for(let h = 9; h < endH; h++) {
-    slots.push(`${String(h).padStart(2,'0')}:00`);
-    if(h + 0.5 < endH) slots.push(`${String(h).padStart(2,'0')}:30`);
+  if(dow === 6) {
+    // Sábado: 9am a 1pm
+    for(let h = 9; h < 13; h++) {
+      slots.push(`${String(h).padStart(2,'0')}:00`);
+      slots.push(`${String(h).padStart(2,'0')}:30`);
+    }
+  } else {
+    // Lunes a Viernes: 9am-12:30pm, pausa 1-2pm, 2pm-5:30pm
+    for(let h = 9; h <= 12; h++) {
+      slots.push(`${String(h).padStart(2,'0')}:00`);
+      if(h < 12) slots.push(`${String(h).padStart(2,'0')}:30`);
+      else slots.push('12:30'); // 12:30 sí está disponible
+    }
+    // Retoma a las 2pm hasta 5:30pm
+    for(let h = 14; h <= 17; h++) {
+      slots.push(`${String(h).padStart(2,'0')}:00`);
+      if(h < 17) slots.push(`${String(h).padStart(2,'0')}:30`);
+      else slots.push('17:30'); // 5:30pm
+    }
   }
   return slots;
 }
@@ -536,14 +552,18 @@ function changeMonth(dir){
   const newDate = new Date(curDate);
   newDate.setMonth(newDate.getMonth()+dir);
   const today = new Date();
-  // No ir antes del mes actual
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 2);
+  // No ir antes del mes actual ni más allá del mes que contiene maxDate
   if(newDate.getFullYear() < today.getFullYear() || 
     (newDate.getFullYear() === today.getFullYear() && newDate.getMonth() < today.getMonth())) return;
+  if(newDate.getFullYear() > maxDate.getFullYear() ||
+    (newDate.getFullYear() === maxDate.getFullYear() && newDate.getMonth() > maxDate.getMonth())) return;
   curDate = newDate;
   renderCalendar();
 }
 
-function selectDay(date){
+async function selectDay(date){
   selDate=date;selSlot=null;
   document.getElementById('bForm').classList.remove('show');
   renderCalendar();
@@ -553,6 +573,17 @@ function selectDay(date){
   wrap.style.display='block';
   const tzLabel = getUserTZLabel();
   title.textContent=`${DAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]} · Hora ${tzLabel}`;
+  
+  // Fetch busy slots from Google Calendar via Make
+  try {
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+    const resp = await fetch(AVAILABILITY_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({date: dateStr, action: 'check'})
+    });
+  } catch(e) {}
   grid.innerHTML='';
   const dayCount = getDayBookedCount(date);
   const allSlots = getSlotsForDate(date);
