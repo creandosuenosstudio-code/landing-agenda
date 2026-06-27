@@ -615,9 +615,15 @@ async function selectDay(date){
     });
     if(resp.ok) {
       const data = await resp.json();
-      if(data.slots && Array.isArray(data.slots)) {
+      let slots = data.slots;
+      // Make puede devolver array, objeto {1:"09:30"} o string
+      if(slots && !Array.isArray(slots)) {
+        if(typeof slots === 'object') slots = Object.values(slots);
+        else if(typeof slots === 'string') slots = [slots];
+      }
+      if(slots && Array.isArray(slots) && slots.length > 0) {
         const key = date.toDateString();
-        bookedSlots[key] = data.slots;
+        bookedSlots[key] = slots;
       }
     }
   } catch(e) { console.log('Availability check failed:', e); }
