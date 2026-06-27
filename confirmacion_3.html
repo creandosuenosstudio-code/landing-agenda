@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirma tu cita — Creando Sueños Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--neon:#00C8E0;--bg:#05050A;--surface:#0D0D14;--border:rgba(0,200,224,0.2);--text:#F5F5FF;--text2:#9494AA}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:100%;text-align:center;box-shadow:0 0 60px rgba(0,200,224,.06)}
+.logo{font-size:.9rem;font-weight:700;color:var(--neon);margin-bottom:2rem;letter-spacing:.05em}
+.check{font-size:3.5rem;margin-bottom:1rem}
+h1{font-size:1.6rem;font-weight:900;margin-bottom:.8rem;line-height:1.15}
+h1 em{font-style:normal;color:var(--neon)}
+.subtitle{color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:1.8rem}
+.details-box{background:rgba(0,200,224,.06);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.8rem;text-align:left}
+.detail-row{display:flex;gap:.6rem;font-size:.85rem;padding:.3rem 0;color:var(--text2)}
+.detail-row strong{color:var(--neon);min-width:65px;flex-shrink:0}
+.instruction{font-size:.88rem;color:var(--text2);margin-bottom:1.2rem;line-height:1.6}
+.instruction strong{color:var(--text)}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:.8rem;background:#25D366;color:#fff;border:none;padding:1rem 2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;width:100%;transition:opacity .2s;margin-bottom:1rem}
+.wa-btn:hover{opacity:.9}
+.wa-icon{font-size:1.4rem}
+.note{font-size:.75rem;color:var(--text2);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">✦ Creando Sueños Studio</div>
+  <div class="check">🎉</div>
+  <h1>¡Tu cita está <em>casi lista</em>!</h1>
+  <p class="subtitle">Recibimos tu solicitud. Para <strong style="color:var(--text)">confirmar tu lugar</strong> solo envíanos un mensaje por WhatsApp — es rápido y sencillo.</p>
+
+  <div class="details-box" id="detailsBox" style="display:none">
+    <div class="detail-row"><strong>Nombre:</strong> <span id="dName">—</span></div>
+    <div class="detail-row"><strong>Fecha:</strong> <span id="dDate">—</span></div>
+    <div class="detail-row"><strong>Hora:</strong> <span id="dTime">—</span></div>
+  </div>
+
+  <p class="instruction">Toca el botón, <strong>envía el mensaje que ya está escrito</strong> y listo — tu cita quedará confirmada.</p>
+
+  <a class="wa-btn" id="waBtn" href="#" target="_blank">
+    <span class="wa-icon">💬</span>
+    Confirmar mi cita por WhatsApp
+  </a>
+
+  
+</div>
+
+<script>
+const WA_NUMBER = '573003930976';
+
+// Read params from URL
+const params = new URLSearchParams(window.location.search);
+const name  = params.get('name')  || '';
+const date  = params.get('date')  || '';
+const time  = params.get('time')  || '';
+const phone = params.get('phone') || '';
+const inv   = params.get('inv')   || '';
+
+if(name) document.getElementById('dName').textContent = name;
+if(date) document.getElementById('dDate').textContent = date;
+if(time) document.getElementById('dTime').textContent = time;
+
+const msg = `¡Hola! Quiero confirmar mi cita con Creando Sueños Studio 🎵`;
+
+document.getElementById('waBtn').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+</script>
+</body>
+</html>
