@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -111,7 +112,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .bdetail strong{color:var(--text)}
 
 /* Calendar */
-.cw{background:var(--bg);border:1px solid var(--border2);border-radius:12px;padding:1.4rem;position:relative}
+.cw{background:var(--bg);border:1px solid var(--border2);border-radius:12px;padding:1.4rem;position:relative;overflow:visible}
 .cw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
 .cw-month{font-weight:700;font-size:.9rem;color:var(--text)}
 .cw-nav{background:none;border:1px solid var(--border2);color:var(--neon);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:all .15s}
@@ -168,9 +169,25 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .service-item:hover{border-color:var(--border2)}
 .service-icon{font-size:1.2rem;flex-shrink:0}
 
+/* Phone selector */
+.phone-wrap{display:flex;gap:0;position:relative}
+.phone-dial{display:flex;align-items:center;gap:.35rem;background:var(--surface2);border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;padding:.62rem .75rem;cursor:pointer;white-space:nowrap;font-size:.83rem;color:var(--text);user-select:none;transition:border-color .15s;flex-shrink:0}
+.phone-dial:hover{border-color:var(--neon)}
+.dial-arrow{font-size:.6rem;color:var(--text2);margin-left:.1rem}
+.phone-wrap input#fPhone{border-radius:0 8px 8px 0!important;flex:1}
+.dial-dropdown{display:none;position:absolute;z-index:9999;top:calc(100% + 4px);left:0;background:var(--surface);border:1px solid var(--border2);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.7);width:260px;overflow:hidden}
+.dial-dropdown.open{display:block}
+.dial-search{width:100%;background:var(--surface2);border:none;border-bottom:1px solid var(--border);padding:.6rem .9rem;color:var(--text);font-size:.82rem;outline:none;font-family:inherit}
+.dial-search::placeholder{color:var(--text3)}
+.dial-list{max-height:220px;overflow-y:auto}
+.dial-option{display:flex;align-items:center;gap:.6rem;padding:.52rem .9rem;cursor:pointer;font-size:.82rem;color:var(--text);transition:background .1s}
+.dial-option:hover{background:rgba(0,200,224,.08)}
+.dial-option .dc{color:var(--text2);margin-left:auto;font-size:.78rem}
+
 /* Footer */
 footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text3);font-size:.77rem;line-height:1.9}
 footer a{color:var(--neon);text-decoration:none}
+
 
 @media(max-width:680px){
   .pillars,.testis,.booking-grid,.frow{grid-template-columns:1fr}
@@ -384,7 +401,21 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
                 <div class="field"><label>Nombre completo *</label><input type="text" id="fName" placeholder="María González"></div>
                 <div class="field"><label>Correo electrónico *</label><input type="email" id="fEmail" placeholder="tu@email.com"></div>
               </div>
-              <div class="field"><label>WhatsApp (con código de país) *</label><input type="tel" id="fPhone" placeholder="+57 300 123 4567"></div>
+              <div class="field">
+                <label>WhatsApp *</label>
+                <div class="phone-wrap">
+                  <div class="phone-dial" id="phoneDial" onclick="toggleDialDropdown()">
+                    <span id="dialFlag">🇨🇴</span>
+                    <span id="dialCode">+57</span>
+                    <span class="dial-arrow">▾</span>
+                  </div>
+                  <div class="dial-dropdown" id="dialDropdown">
+                    <input class="dial-search" type="text" placeholder="Buscar país..." oninput="filterDial(this.value)" onclick="event.stopPropagation()">
+                    <div class="dial-list" id="dialList"></div>
+                  </div>
+                  <input type="tel" id="fPhone" placeholder="300 123 4567">
+                </div>
+              </div>
               <div class="field">
                 <label>¿En qué etapa estás respecto a invertir en tu música? *</label>
                 <select id="fInversion">
@@ -579,11 +610,17 @@ async function selectDay(date){
     const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
     const resp = await fetch(AVAILABILITY_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({date: dateStr, action: 'check'})
     });
-  } catch(e) {}
+    if(resp.ok) {
+      const data = await resp.json();
+      if(data.slots && Array.isArray(data.slots)) {
+        const key = date.toDateString();
+        bookedSlots[key] = data.slots;
+      }
+    }
+  } catch(e) { console.log('Availability check failed:', e); }
   grid.innerHTML='';
   const dayCount = getDayBookedCount(date);
   const allSlots = getSlotsForDate(date);
@@ -634,7 +671,8 @@ function selectSlot(slot, el, localLabel){
 async function submitBooking(){
   const name=document.getElementById('fName').value.trim();
   const email=document.getElementById('fEmail').value.trim();
-  const phone=document.getElementById('fPhone').value.trim();
+  const phoneRaw = document.getElementById('fPhone').value.trim();
+  const phone = phoneRaw ? selectedDial.c + phoneRaw.replace(/^0+/,'').replace(/\s/g,'') : '';
   const inv=document.getElementById('fInversion').value;
   const carrera=document.getElementById('fCarrera').value.trim();
   if(!name||!email||!phone||!inv){alert('Por favor completa todos los campos obligatorios (*).');return;}
@@ -706,6 +744,68 @@ const iframeObserver = new IntersectionObserver((entries) => {
 }, { rootMargin: '200px' });
 
 lazyIframes.forEach(iframe => iframeObserver.observe(iframe));
+</script>
+<script>
+// Custom country dial selector
+const COUNTRIES = [
+  {f:'🇨🇴',n:'Colombia',c:'+57'},{f:'🇲🇽',n:'México',c:'+52'},{f:'🇺🇸',n:'Estados Unidos',c:'+1'},
+  {f:'🇻🇪',n:'Venezuela',c:'+58'},{f:'🇵🇪',n:'Perú',c:'+51'},{f:'🇪🇨',n:'Ecuador',c:'+593'},
+  {f:'🇨🇱',n:'Chile',c:'+56'},{f:'🇦🇷',n:'Argentina',c:'+54'},{f:'🇬🇹',n:'Guatemala',c:'+502'},
+  {f:'🇭🇳',n:'Honduras',c:'+504'},{f:'🇸🇻',n:'El Salvador',c:'+503'},{f:'🇨🇷',n:'Costa Rica',c:'+506'},
+  {f:'🇵🇦',n:'Panamá',c:'+507'},{f:'🇩🇴',n:'Rep. Dominicana',c:'+1'},{f:'🇵🇷',n:'Puerto Rico',c:'+1'},
+  {f:'🇧🇴',n:'Bolivia',c:'+591'},{f:'🇵🇾',n:'Paraguay',c:'+595'},{f:'🇺🇾',n:'Uruguay',c:'+598'},
+  {f:'🇳🇮',n:'Nicaragua',c:'+505'},{f:'🇨🇺',n:'Cuba',c:'+53'},{f:'🇧🇷',n:'Brasil',c:'+55'},
+  {f:'🇪🇸',n:'España',c:'+34'},{f:'🇬🇧',n:'Reino Unido',c:'+44'},{f:'🇨🇦',n:'Canadá',c:'+1'},
+  {f:'🇦🇺',n:'Australia',c:'+61'},{f:'🇩🇪',n:'Alemania',c:'+49'},{f:'🇫🇷',n:'Francia',c:'+33'},
+  {f:'🇮🇹',n:'Italia',c:'+39'},{f:'🇵🇹',n:'Portugal',c:'+351'}
+];
+
+let selectedDial = COUNTRIES[0];
+
+function buildDialList(filter=''){
+  const list = document.getElementById('dialList');
+  list.innerHTML='';
+  COUNTRIES.filter(c=>!filter||c.n.toLowerCase().includes(filter.toLowerCase())||c.c.includes(filter))
+    .forEach(c=>{
+      const el=document.createElement('div');
+      el.className='dial-option';
+      el.innerHTML=`<span>${c.f}</span><span>${c.n}</span><span class="dc">${c.c}</span>`;
+      el.onclick=()=>selectDial(c);
+      list.appendChild(el);
+    });
+}
+
+function selectDial(c){
+  selectedDial=c;
+  document.getElementById('dialFlag').textContent=c.f;
+  document.getElementById('dialCode').textContent=c.c;
+  closeDialDropdown();
+  document.getElementById('fPhone').focus();
+}
+
+function toggleDialDropdown(){
+  const dd=document.getElementById('dialDropdown');
+  if(dd.classList.contains('open')){closeDialDropdown();return;}
+  dd.classList.add('open');
+  buildDialList();
+  setTimeout(()=>dd.querySelector('.dial-search').focus(),50);
+  document.addEventListener('click',outsideDialClick);
+}
+
+function closeDialDropdown(){
+  document.getElementById('dialDropdown').classList.remove('open');
+  document.getElementById('dialDropdown').querySelector('.dial-search').value='';
+  document.removeEventListener('click',outsideDialClick);
+}
+
+function outsideDialClick(e){
+  if(!document.getElementById('dialDropdown').contains(e.target)&&!document.getElementById('phoneDial').contains(e.target))
+    closeDialDropdown();
+}
+
+function filterDial(v){buildDialList(v);}
+
+buildDialList();
 </script>
 </body>
 </html>
