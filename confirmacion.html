@@ -60,11 +60,18 @@ const time  = params.get('time')  || '';
 const phone = params.get('phone') || '';
 const inv   = params.get('inv')   || '';
 
+if(name || date || time) document.getElementById('detailsBox').style.display='block';
 if(name) document.getElementById('dName').textContent = name;
 if(date) document.getElementById('dDate').textContent = date;
 if(time) document.getElementById('dTime').textContent = time;
 
-const msg = `¡Hola! Quiero confirmar mi cita con Creando Sueños Studio 🎵`;
+const msg = `¡Hola! Quiero confirmar mi cita con Creando Sueños Studio 🎵
+
+📅 Fecha: ${date}
+⏰ Hora: ${time}
+👤 Nombre: ${name}
+
+¡Estoy listo/a para la llamada! 🙌`;
 
 document.getElementById('waBtn').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
 </script>
