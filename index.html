@@ -680,7 +680,8 @@ async function submitBooking(){
   const btn=document.getElementById('submitBtn');
   btn.disabled=true;
   showOverlay('Agendando tu llamada...');
-  const[h,min]=selSlot.split(':').map(Number);
+      const cleanSlot = selSlot.trim().replace(/[^\d:]/g,'');
+      const timeSlot = cleanSlot.length === 4 ? '0' + cleanSlot : cleanSlot;
   // startDT is in Colombia time (UTC-5)
   const startDT = convertSlotToLocal(selDate, selSlot);
   const localTimeStr = fmtLocalTime(startDT);
@@ -692,7 +693,7 @@ async function submitBooking(){
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name, email, phone, inversion:inv, carrera, date:dateStr, dateISO:dateISO, time:timeStr, timeSlot:selSlot.trim().replace(/[^\d:]/g,''), startISO:startDT.toISOString()})
+      body: JSON.stringify({name, email, phone, inversion:inv, carrera, date:dateStr, dateISO:dateISO, time:timeStr, timeSlot:timeSlot, startISO:startDT.toISOString()})
     });
     hideOverlay();
     // Redirigir a página de confirmación con WhatsApp
