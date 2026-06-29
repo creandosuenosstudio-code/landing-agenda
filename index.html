@@ -345,7 +345,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En 30 minutos te contamos exactamente cómo llevamos tu canción desde la grabación hasta el lanzamiento, y diseñamos un plan adaptado a tu ministerio y tu presupuesto.</p>
         <div class="bdetail"><span>⏱️</span><span><strong>30 minutos</strong> · Google Meet</span></div>
         <div class="bdetail"><span>🎯</span><span>Cupos limitados</span></div>
-        <div class="bdetail"><span>📧</span><span>Recibes confirmación por correo al instante</span></div>
+        <div class="bdetail"><span>📲</span><span>Recibes confirmación por WhatsApp</span></div>
       </div>
       <div>
         <div class="cw" id="calWidget">
@@ -364,7 +364,6 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
               <div class="sel-summary" id="selSummary"></div>
               <div class="frow">
                 <div class="field"><label>Nombre completo *</label><input type="text" id="fName" placeholder="María González"></div>
-                <div class="field"><label>Correo electrónico *</label><input type="email" id="fEmail" placeholder="tu@email.com"></div>
               </div>
               <div class="field">
                 <label>WhatsApp *</label>
@@ -667,13 +666,12 @@ function selectSlot(slot, el, localLabel){
 
 async function submitBooking(){
   const name=document.getElementById('fName').value.trim();
-  const email=document.getElementById('fEmail').value.trim();
   const phoneRaw = document.getElementById('fPhone').value.trim();
   const phone = phoneRaw ? selectedDial.c + phoneRaw.replace(/^0+/,'').replace(/\s/g,'') : '';
   const inv=document.getElementById('fInversion').value;
   const carrera=document.getElementById('fCarrera').value.trim();
 
-  if(!name||!email||!phone||!inv){alert('Por favor completa todos los campos obligatorios (*).');return;}
+  if(!name||!phone||!inv){alert('Por favor completa todos los campos obligatorios (*).');return;}
   if(!selDate||!selSlot){alert('Por favor selecciona una fecha y hora.');return;}
 
   const btn=document.getElementById('submitBtn');
@@ -693,7 +691,7 @@ async function submitBooking(){
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({name, email, phone, inversion:inv, carrera, date:dateStr, dateISO:dateISO, time:timeStr, timeSlot:timeSlot, startISO:startDT.toISOString()})
+      body: JSON.stringify({name, phone, inversion:inv, carrera, date:dateStr, dateISO:dateISO, time:timeStr, timeSlot:timeSlot, startISO:startDT.toISOString()})
     });
     hideOverlay();
 
