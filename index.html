@@ -582,13 +582,27 @@ async function selectDay(date){
       // Caso 2: string tipo "09:00,09:30" o "{object},{object}"
       // Caso 3: objeto tipo {"1":"09:00","2":"09:30"} o {value:{...}}
       // Caso 4: array de objetos [{start:"09:00"}, ...]
+      // Caso 5: hora completa ISO tipo "2026-07-02T10:00:00-05:00" → se extrae solo HH:MM en hora Colombia
+      function extractHHMM(s) {
+        s = String(s).trim();
+        if(/^\d{1,2}:\d{2}$/.test(s)) return s; // ya es HH:MM
+        // Intentar parsear como fecha ISO completa
+        const d = new Date(s);
+        if(!isNaN(d.getTime()) && /\d{4}-\d{2}-\d{2}/.test(s)) {
+          // Convertir a hora Colombia (America/Bogota = UTC-5 fijo)
+          const bogotaStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Bogota'});
+          return bogotaStr;
+        }
+        return null;
+      }
+
       if(slots !== null && slots !== undefined && !Array.isArray(slots)) {
         if(typeof slots === 'string') {
-          // Splitear por coma, limpiar, filtrar solo HH:MM válidos
+          // Splitear por coma, limpiar, extraer HH:MM de cada elemento
           slots = slots
             .split(',')
-            .map(s => s.trim())
-            .filter(s => /^\d{1,2}:\d{2}$/.test(s));
+            .map(s => extractHHMM(s))
+            .filter(s => s && /^\d{1,2}:\d{2}$/.test(s));
         } else if(typeof slots === 'object') {
           if(slots.value !== undefined) slots = slots.value;
           if(typeof slots === 'object' && !Array.isArray(slots)) slots = Object.values(slots);
@@ -601,11 +615,11 @@ async function selectDay(date){
           .map(s => {
             if(typeof s === 'object' && s !== null) {
               // {start:"09:00"} o {time:"09:00"} o {slot:"09:00"}
-              return s.start || s.time || s.slot || String(Object.values(s)[0] || '').trim();
+              s = s.start || s.time || s.slot || String(Object.values(s)[0] || '').trim();
             }
-            return String(s).trim();
+            return extractHHMM(s);
           })
-          .filter(s => /^\d{1,2}:\d{2}$/.test(s));
+          .filter(s => s && /^\d{1,2}:\d{2}$/.test(s));
       }
       // ──────────────────────────────────────────────────────────────────
 
