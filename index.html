@@ -582,7 +582,6 @@ async function selectDay(date){
 
     if(resp.ok) {
       const data = await resp.json();
-      let slots = data.slots;
 
       // ── NORMALIZACIÓN ROBUSTA ──────────────────────────────────────────
       // Formato esperado por elemento: "HH:MM" (Sheets, siempre cuenta como cita real)
