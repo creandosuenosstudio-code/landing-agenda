@@ -453,6 +453,7 @@ function getUserTZLabel() {
 }
 
 const bookedSlots = {};
+const realBookingCounts = {}; // solo cuenta citas reales (Asesoria Creando Sueños), no bloqueos manuales
 const MAX_DAILY = 6;
 const MIN_HOURS_AHEAD = 4;
 
@@ -493,13 +494,19 @@ function isSlotAvailable(date, slot) {
 
 function getDayBookedCount(date) {
   const key = date.toDateString();
-  return (bookedSlots[key] || []).length;
+  return realBookingCounts[key] || 0;
+}
+
+function incrementRealBookingCount(date) {
+  const key = date.toDateString();
+  realBookingCounts[key] = (realBookingCounts[key] || 0) + 1;
 }
 
 function markSlotBooked(date, slot) {
   const key = date.toDateString();
   if(!bookedSlots[key]) bookedSlots[key] = [];
   bookedSlots[key].push(slot);
+  incrementRealBookingCount(date);
 }
 
 function showOverlay(t){document.getElementById('overlayText').textContent=t;document.getElementById('overlay').classList.add('show');}
@@ -578,55 +585,67 @@ async function selectDay(date){
       let slots = data.slots;
 
       // ── NORMALIZACIÓN ROBUSTA ──────────────────────────────────────────
-      // Caso 1: ya es array → OK
-      // Caso 2: string tipo "09:00,09:30" o "{object},{object}"
-      // Caso 3: objeto tipo {"1":"09:00","2":"09:30"} o {value:{...}}
-      // Caso 4: array de objetos [{start:"09:00"}, ...]
-      // Caso 5: hora completa ISO tipo "2026-07-02T10:00:00-05:00" → se extrae solo HH:MM en hora Colombia
+      // Formato esperado por elemento: "HH:MM" (Sheets, siempre cuenta como cita real)
+      // o "ISO_DATE|Summary" (Calendar) → si Summary empieza con "Asesoria Creando Sueños" cuenta como real, si no es solo bloqueo visual
       function extractHHMM(s) {
         s = String(s).trim();
         if(/^\d{1,2}:\d{2}$/.test(s)) return s; // ya es HH:MM
-        // Intentar parsear como fecha ISO completa
         const d = new Date(s);
         if(!isNaN(d.getTime()) && /\d{4}-\d{2}-\d{2}/.test(s)) {
-          // Convertir a hora Colombia (America/Bogota = UTC-5 fijo)
-          const bogotaStr = d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Bogota'});
-          return bogotaStr;
+          return d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Bogota'});
         }
         return null;
       }
 
-      if(slots !== null && slots !== undefined && !Array.isArray(slots)) {
-        if(typeof slots === 'string') {
-          // Splitear por coma, limpiar, extraer HH:MM de cada elemento
-          slots = slots
-            .split(',')
-            .map(s => extractHHMM(s))
-            .filter(s => s && /^\d{1,2}:\d{2}$/.test(s));
-        } else if(typeof slots === 'object') {
-          if(slots.value !== undefined) slots = slots.value;
-          if(typeof slots === 'object' && !Array.isArray(slots)) slots = Object.values(slots);
-        }
-      }
+      let rawSlots = data.slots;
+      let slots = []; // todas las horas que se ven tachadas (visual)
+      let realCount = 0; // cuántas de esas son citas reales de clientes
 
-      // Normalizar elementos individuales (por si son objetos o strings raros)
-      if(Array.isArray(slots)) {
-        slots = slots
-          .map(s => {
+      if(typeof rawSlots === 'string') {
+        rawSlots.split(',').forEach(item => {
+          item = item.trim();
+          if(!item) return;
+          // ¿Tiene formato Start|Summary?
+          if(item.includes('|')) {
+            const [startPart, ...summaryParts] = item.split('|');
+            const summary = summaryParts.join('|').trim();
+            const hhmm = extractHHMM(startPart);
+            if(hhmm) {
+              slots.push(hhmm);
+              if(summary && summary.toLowerCase().startsWith('asesoria creando sueños')) {
+                realCount++;
+              }
+              // si no tiene ese prefijo (ej. "OCUPADO"), se tacha visualmente pero NO cuenta
+            }
+          } else {
+            // Formato simple HH:MM (viene de Google Sheets) → siempre es cita real
+            const hhmm = extractHHMM(item);
+            if(hhmm) {
+              slots.push(hhmm);
+              realCount++;
+            }
+          }
+        });
+      } else if(rawSlots && typeof rawSlots === 'object') {
+        if(rawSlots.value !== undefined) rawSlots = rawSlots.value;
+        if(typeof rawSlots === 'object' && !Array.isArray(rawSlots)) rawSlots = Object.values(rawSlots);
+        if(Array.isArray(rawSlots)) {
+          rawSlots.forEach(s => {
             if(typeof s === 'object' && s !== null) {
-              // {start:"09:00"} o {time:"09:00"} o {slot:"09:00"}
               s = s.start || s.time || s.slot || String(Object.values(s)[0] || '').trim();
             }
-            return extractHHMM(s);
-          })
-          .filter(s => s && /^\d{1,2}:\d{2}$/.test(s));
+            const hhmm = extractHHMM(s);
+            if(hhmm) { slots.push(hhmm); realCount++; }
+          });
+        }
       }
       // ──────────────────────────────────────────────────────────────────
 
-      if(slots && Array.isArray(slots) && slots.length > 0) {
+      if(slots.length > 0) {
         const key = date.toDateString();
         bookedSlots[key] = slots;
-        console.log('✅ Slots bloqueados para', key, ':', slots);
+        realBookingCounts[key] = realCount;
+        console.log('✅ Slots bloqueados para', key, ':', slots, '| Citas reales:', realCount);
       } else {
         console.log('ℹ️ No hay slots bloqueados para esta fecha');
       }
