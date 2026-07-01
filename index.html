@@ -525,7 +525,7 @@ function renderCalendar(){
   // Calcular los próximos 3 días hábiles (lunes a sábado, no domingos)
   const validDays = [];
   let check = new Date(today);
-  check.setDate(check.getDate() + 1); // empezar desde mañana
+  // empezar desde hoy (no desde mañana)
   while(validDays.length < 3) {
     if(check.getDay() !== 0) validDays.push(check.toDateString());
     check.setDate(check.getDate() + 1);
