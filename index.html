@@ -457,25 +457,29 @@ const realBookingCounts = {}; // solo cuenta citas reales (Asesoria Creando Sue�
 const MAX_DAILY = 9999; // límite diario desactivado
 const MIN_HOURS_AHEAD = 4;
 
+function addSlotRange(slots, startH, startM, endH, endM) {
+  let h = startH, m = startM;
+  while (h < endH || (h === endH && m < endM)) {
+    slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
+    m += 30;
+    if (m >= 60) { m = 0; h++; }
+  }
+}
+
 function getSlotsForDate(date) {
   const dow = date.getDay();
   const slots = [];
   if(dow === 6) {
-    for(let h = 9; h < 13; h++) {
-      slots.push(`${String(h).padStart(2,'0')}:00`);
-      slots.push(`${String(h).padStart(2,'0')}:30`);
-    }
-  } else {
-    for(let h = 9; h <= 12; h++) {
-      slots.push(`${String(h).padStart(2,'0')}:00`);
-      if(h < 12) slots.push(`${String(h).padStart(2,'0')}:30`);
-      else slots.push('12:30');
-    }
-    for(let h = 14; h <= 17; h++) {
-      slots.push(`${String(h).padStart(2,'0')}:00`);
-      if(h < 17) slots.push(`${String(h).padStart(2,'0')}:30`);
-      else slots.push('17:30');
-    }
+    // Sábado: 8:00am - 3:00pm (bloque continuo)
+    addSlotRange(slots, 8, 0, 15, 0);
+  } else if(dow === 3) {
+    // Miércoles: 8:00am - 1:00pm y 2:00pm - 6:00pm
+    addSlotRange(slots, 8, 0, 13, 0);
+    addSlotRange(slots, 14, 0, 18, 0);
+  } else if(dow >= 1 && dow <= 5) {
+    // Lunes, Martes, Jueves, Viernes: 7:00am - 1:00pm y 2:00pm - 7:00pm
+    addSlotRange(slots, 7, 0, 13, 0);
+    addSlotRange(slots, 14, 0, 19, 0);
   }
   return slots;
 }
