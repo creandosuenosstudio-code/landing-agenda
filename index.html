@@ -454,8 +454,34 @@ function getUserTZLabel() {
 
 const bookedSlots = {};
 const realBookingCounts = {}; // solo cuenta citas reales (Asesoria Creando Sueños), no bloqueos manuales
-const MAX_DAILY = 9999; // límite diario desactivado
+const realBookedTimes = {}; // horas HH:MM de las citas reales del día, para calcular cupos por franja horaria
 const MIN_HOURS_AHEAD = 4;
+
+// Franjas de agenda:
+// - "normal" (9:00am - 6:00pm, jornada laboral de Jhonfer): tope de 8 citas
+// - "morning" (antes de las 9:00am, horario extra de la mañana): tope de 4 citas
+// - "evening" (desde las 6:00pm en adelante, horario extra de la tarde/noche): tope de 2 citas
+const WINDOW_CAPS = { normal: 8, morning: 4, evening: 2 };
+
+function timeToMinutes(t) {
+  const [h, m] = t.split(':').map(Number);
+  return h * 60 + m;
+}
+
+function getSlotWindow(slot) {
+  const mins = timeToMinutes(slot);
+  if (mins < 9 * 60) return 'morning';
+  if (mins >= 18 * 60) return 'evening';
+  return 'normal';
+}
+
+function getWindowCounts(date) {
+  const key = date.toDateString();
+  const times = realBookedTimes[key] || [];
+  const counts = { normal: 0, morning: 0, evening: 0 };
+  times.forEach(t => { counts[getSlotWindow(t)]++; });
+  return counts;
+}
 
 function addSlotRange(slots, startH, startM, endH, endM) {
   let h = startH, m = startM;
@@ -496,21 +522,13 @@ function isSlotAvailable(date, slot) {
   return true;
 }
 
-function getDayBookedCount(date) {
-  const key = date.toDateString();
-  return realBookingCounts[key] || 0;
-}
-
-function incrementRealBookingCount(date) {
-  const key = date.toDateString();
-  realBookingCounts[key] = (realBookingCounts[key] || 0) + 1;
-}
-
 function markSlotBooked(date, slot) {
   const key = date.toDateString();
   if(!bookedSlots[key]) bookedSlots[key] = [];
   bookedSlots[key].push(slot);
-  incrementRealBookingCount(date);
+  realBookingCounts[key] = (realBookingCounts[key] || 0) + 1;
+  if(!realBookedTimes[key]) realBookedTimes[key] = [];
+  realBookedTimes[key].push(slot);
 }
 
 function showOverlay(t){document.getElementById('overlayText').textContent=t;document.getElementById('overlay').classList.add('show');}
@@ -603,6 +621,7 @@ async function selectDay(date){
       let rawSlots = data.slots;
       let slots = []; // todas las horas que se ven tachadas (visual)
       let realCount = 0; // cuántas de esas son citas reales de clientes
+      let realTimes = []; // horas HH:MM de las citas reales, para calcular cupos por franja
 
       if(typeof rawSlots === 'string') {
         rawSlots.split(',').forEach(item => {
@@ -617,6 +636,7 @@ async function selectDay(date){
               slots.push(hhmm);
               if(summary && summary.toLowerCase().startsWith('asesoria creando sueños')) {
                 realCount++;
+                realTimes.push(hhmm);
               }
               // si no tiene ese prefijo (ej. "OCUPADO"), se tacha visualmente pero NO cuenta
             }
@@ -626,6 +646,7 @@ async function selectDay(date){
             if(hhmm) {
               slots.push(hhmm);
               realCount++;
+              realTimes.push(hhmm);
             }
           }
         });
@@ -638,36 +659,40 @@ async function selectDay(date){
               s = s.start || s.time || s.slot || String(Object.values(s)[0] || '').trim();
             }
             const hhmm = extractHHMM(s);
-            if(hhmm) { slots.push(hhmm); realCount++; }
+            if(hhmm) { slots.push(hhmm); realCount++; realTimes.push(hhmm); }
           });
         }
       }
       // ──────────────────────────────────────────────────────────────────
 
+      const key = date.toDateString();
       if(slots.length > 0) {
-        const key = date.toDateString();
         bookedSlots[key] = slots;
         realBookingCounts[key] = realCount;
         console.log('✅ Slots bloqueados para', key, ':', slots, '| Citas reales:', realCount);
       } else {
         console.log('ℹ️ No hay slots bloqueados para esta fecha');
       }
+      realBookedTimes[key] = realTimes;
     }
   } catch(e) {
     console.log('Availability check failed:', e);
   }
 
   grid.innerHTML='';
-  const dayCount = getDayBookedCount(date);
+  const windowCounts = getWindowCounts(date);
   const allSlots = getSlotsForDate(date);
+  let anyAvailable = false;
 
   allSlots.forEach(s=>{
     const available = isSlotAvailable(date, s);
+    const win = getSlotWindow(s);
+    const capReached = windowCounts[win] >= WINDOW_CAPS[win];
     const utcDate = convertSlotToLocal(date, s);
     const localLabel = fmtLocalTime(utcDate);
     const el=document.createElement('div');
 
-    if(dayCount >= MAX_DAILY || !available) {
+    if(capReached || !available) {
       el.className='slot taken';
       el.textContent=localLabel;
       el.style.opacity='.3';
@@ -677,11 +702,12 @@ async function selectDay(date){
       el.className='slot';
       el.textContent=localLabel;
       el.onclick=()=>selectSlot(s, el, localLabel);
+      anyAvailable = true;
     }
     grid.appendChild(el);
   });
 
-  if(dayCount >= MAX_DAILY) {
+  if(!anyAvailable) {
     const msg = document.createElement('div');
     msg.style.cssText='grid-column:1/-1;text-align:center;font-size:.75rem;color:var(--neon);padding:.5rem;margin-top:.3rem';
     msg.textContent='No hay cupos disponibles para este día';
