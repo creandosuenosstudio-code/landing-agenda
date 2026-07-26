@@ -523,11 +523,11 @@ function renderCalendar(){
   for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cd';grid.appendChild(el);}
   const dim=new Date(y,m+1,0).getDate();
   const today=new Date();today.setHours(0,0,0,0);
-  // Calcular los próximos 3 días hábiles (lunes a sábado, no domingos)
+  // Calcular los próximos 2 días hábiles (lunes a sábado, no domingos)
   const validDays = [];
   let check = new Date(today);
   // empezar desde hoy (no desde mañana)
-  while(validDays.length < 3) {
+  while(validDays.length < 2) {
     if(check.getDay() !== 0) validDays.push(check.toDateString());
     check.setDate(check.getDate() + 1);
   }
@@ -547,7 +547,7 @@ function changeMonth(dir){
   const newDate = new Date(curDate);
   newDate.setMonth(newDate.getMonth()+dir);
   const today = new Date();
-  // Solo permitir el mes actual y el siguiente (por si los 3 días hábiles cruzan mes)
+  // Solo permitir el mes actual y el siguiente (por si los 2 días hábiles cruzan mes)
   const maxDate = new Date(today);
   maxDate.setDate(maxDate.getDate() + 10);
   if(newDate.getFullYear() < today.getFullYear() ||
