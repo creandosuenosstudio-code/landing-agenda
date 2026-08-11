@@ -453,8 +453,10 @@ function getUserTZLabel() {
 
 const bookedSlots = {};
 const realBookingCounts = {}; // solo cuenta citas reales (Asesoria Creando Sueños), no bloqueos manuales
-const realBookedTimes = {}; // horas HH:MM de las citas reales del día (se mantiene por si se reactiva algún tope más adelante)
+const realBookedTimes = {}; // horas HH:MM de las citas reales del día (usadas para el tope de SLOT_CAPACITY por horario)
+const manualBlockedTimes = {}; // horas HH:MM bloqueadas manualmente en el calendario (ej. tareas/bloqueos personales de Jhonfer) — bloquean el slot por completo, sin importar SLOT_CAPACITY
 const MAX_DAILY = 9999; // sin tope diario: la agenda solo se bloquea por lo que ya esté realmente ocupado en el calendario
+const SLOT_CAPACITY = 2; // hasta 2 citas simultáneas de clientes por horario (Jhonfer + Juanpa como segundo closer)
 const MIN_HOURS_AHEAD = 4;
 
 function addSlotRange(slots, startH, startM, endH, endM) {
@@ -492,7 +494,11 @@ function isSlotAvailable(date, slot) {
   const diffHours = (slotTime - now) / (1000 * 60 * 60);
   if(diffHours < MIN_HOURS_AHEAD) return false;
   const key = date.toDateString();
-  if(bookedSlots[key] && bookedSlots[key].includes(slot)) return false;
+  // Bloqueo total: cualquier bloqueo manual/personal en este horario (ej. tarea de Jhonfer) cierra el slot por completo
+  if(manualBlockedTimes[key] && manualBlockedTimes[key].includes(slot)) return false;
+  // Bloqueo por capacidad: hasta SLOT_CAPACITY citas reales de clientes en el mismo horario
+  const realOcc = (realBookedTimes[key] || []).filter(t => t === slot).length;
+  if(realOcc >= SLOT_CAPACITY) return false;
   return true;
 }
 
@@ -600,7 +606,8 @@ async function selectDay(date){
       let rawSlots = data.slots;
       let slots = []; // todas las horas que se ven tachadas (visual)
       let realCount = 0; // cuántas de esas son citas reales de clientes
-      let realTimes = []; // horas HH:MM de las citas reales, para calcular cupos por franja
+      let realTimes = []; // horas HH:MM de las citas reales, usadas para el tope de SLOT_CAPACITY
+      let manualTimes = []; // horas HH:MM bloqueadas manualmente (no son citas de cliente) — bloquean el slot por completo
 
       if(typeof rawSlots === 'string') {
         rawSlots.split(',').forEach(item => {
@@ -616,8 +623,10 @@ async function selectDay(date){
               if(summary && summary.toLowerCase().startsWith('asesoria creando sueños')) {
                 realCount++;
                 realTimes.push(hhmm);
+              } else {
+                // no tiene ese prefijo (ej. "OCUPADO", tarea/bloqueo personal) → bloquea el slot por completo
+                manualTimes.push(hhmm);
               }
-              // si no tiene ese prefijo (ej. "OCUPADO"), se tacha visualmente pero NO cuenta
             }
           } else {
             // Formato simple HH:MM (viene de Google Sheets) → siempre es cita real
@@ -653,6 +662,7 @@ async function selectDay(date){
         console.log('ℹ️ No hay slots bloqueados para esta fecha');
       }
       realBookedTimes[key] = realTimes;
+      manualBlockedTimes[key] = manualTimes;
     }
   } catch(e) {
     console.log('Availability check failed:', e);
