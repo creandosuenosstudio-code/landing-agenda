@@ -453,11 +453,20 @@ function getUserTZLabel() {
 
 const bookedSlots = {};
 const realBookingCounts = {}; // solo cuenta citas reales (Asesoria Creando Sueños), no bloqueos manuales
-const realBookedTimes = {}; // horas HH:MM de las citas reales del día (usadas para el tope de SLOT_CAPACITY por horario)
-const manualBlockedTimes = {}; // horas HH:MM bloqueadas manualmente en el calendario (ej. tareas/bloqueos personales de Jhonfer) — bloquean el slot por completo, sin importar SLOT_CAPACITY
+const realBookedTimes = {}; // horas HH:MM de las citas reales del día (usadas para el tope de capacidad por horario)
+const manualBlockedTimes = {}; // horas HH:MM bloqueadas manualmente en el calendario (ej. tareas/bloqueos personales de Jhonfer) — bloquean el slot por completo, sin importar la capacidad
 const MAX_DAILY = 9999; // sin tope diario: la agenda solo se bloquea por lo que ya esté realmente ocupado en el calendario
-const SLOT_CAPACITY = 2; // hasta 2 citas simultáneas de clientes por horario (Jhonfer + Juanpa como segundo closer)
 const MIN_HOURS_AHEAD = 4;
+
+// Capacidad de citas simultáneas por horario:
+// - 9:00am - 6:00pm (jornada laboral normal): 2 citas — Jhonfer + Juanpa como segundo closer
+// - Antes de las 9:00am o desde las 6:00pm en adelante (horario extra): 1 cita — exclusivo de Jhonfer
+function getSlotCapacity(slot) {
+  const [h, m] = slot.split(':').map(Number);
+  const mins = h * 60 + m;
+  const isNormalWindow = mins >= 9 * 60 && mins < 18 * 60;
+  return isNormalWindow ? 2 : 1;
+}
 
 function addSlotRange(slots, startH, startM, endH, endM) {
   let h = startH, m = startM;
@@ -496,9 +505,9 @@ function isSlotAvailable(date, slot) {
   const key = date.toDateString();
   // Bloqueo total: cualquier bloqueo manual/personal en este horario (ej. tarea de Jhonfer) cierra el slot por completo
   if(manualBlockedTimes[key] && manualBlockedTimes[key].includes(slot)) return false;
-  // Bloqueo por capacidad: hasta SLOT_CAPACITY citas reales de clientes en el mismo horario
+  // Bloqueo por capacidad: 2 citas en jornada normal (9am-6pm), 1 cita en horario extra
   const realOcc = (realBookedTimes[key] || []).filter(t => t === slot).length;
-  if(realOcc >= SLOT_CAPACITY) return false;
+  if(realOcc >= getSlotCapacity(slot)) return false;
   return true;
 }
 
@@ -606,7 +615,7 @@ async function selectDay(date){
       let rawSlots = data.slots;
       let slots = []; // todas las horas que se ven tachadas (visual)
       let realCount = 0; // cuántas de esas son citas reales de clientes
-      let realTimes = []; // horas HH:MM de las citas reales, usadas para el tope de SLOT_CAPACITY
+      let realTimes = []; // horas HH:MM de las citas reales, usadas para el tope de capacidad por horario
       let manualTimes = []; // horas HH:MM bloqueadas manualmente (no son citas de cliente) — bloquean el slot por completo
 
       if(typeof rawSlots === 'string') {
