@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirma tu cita — Creando Sueños Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--neon:#00C8E0;--bg:#05050A;--surface:#0D0D14;--border:rgba(0,200,224,0.2);--text:#F5F5FF;--text2:#9494AA}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:100%;text-align:center;box-shadow:0 0 60px rgba(0,200,224,.06)}
+.logo{font-size:.9rem;font-weight:700;color:var(--neon);margin-bottom:2rem;letter-spacing:.05em}
+.check{font-size:3.5rem;margin-bottom:1rem}
+h1{font-size:1.6rem;font-weight:900;margin-bottom:.8rem;line-height:1.15}
+h1 em{font-style:normal;color:var(--neon)}
+.subtitle{color:var(--text2);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem}
+.video-label{font-size:.75rem;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.7rem}
+.video-wrap{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;border:1px solid var(--border);background:#000;box-shadow:0 0 30px rgba(0,200,224,.08);margin-bottom:1.6rem}
+.video-wrap iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.details-box{background:rgba(0,200,224,.06);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.8rem;text-align:left}
+.detail-row{display:flex;gap:.6rem;font-size:.85rem;padding:.3rem 0;color:var(--text2)}
+.detail-row strong{color:var(--neon);min-width:65px;flex-shrink:0}
+.instruction{font-size:.88rem;color:var(--text2);margin-bottom:1.2rem;line-height:1.6}
+.instruction strong{color:var(--text)}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:.8rem;background:#25D366;color:#fff;border:none;padding:1rem 2rem;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;width:100%;transition:opacity .2s;margin-bottom:1rem}
+.wa-btn:hover{opacity:.9}
+.wa-icon{font-size:1.4rem}
+.note{font-size:.75rem;color:var(--text2);line-height:1.6}
+.testi-wrap{max-width:480px;width:100%;margin-top:1.5rem}
+.testi-header{text-align:center;margin-bottom:1.2rem}
+.testi-label{font-size:.75rem;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem}
+.testi-title{font-size:1.25rem;font-weight:900;line-height:1.2}
+.tv-item{margin-bottom:1.3rem}
+.tv-label{font-size:.72rem;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.5rem}
+.tv-container{position:relative;overflow:hidden;border-radius:12px;border:1px solid var(--border);background:#000;box-shadow:0 0 24px rgba(0,200,224,.06)}
+.tv-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+.tv-horizontal{padding-bottom:56.25%}
+.tv-vertical{padding-bottom:177.78%}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">✦ Creando Sueños Studio</div>
+  <div class="check">🎉</div>
+  <h1>Estás a un paso de <em>agendar tu llamada</em></h1>
+  <p class="subtitle">Recibimos tu solicitud. <strong style="color:var(--text)">Es obligatorio ver este video</strong> — sin verlo, no puedes asistir a la llamada.</p>
+
+  <div class="video-label">▶ Mira esto antes de confirmar</div>
+  <div class="video-wrap">
+    <iframe src="https://player.vimeo.com/video/1217412842?title=0&byline=0&portrait=0&badge=0&autopause=0&autoplay=1&muted=1&player_id=0&app_id=58479"
+      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" title="Pag Gracias"></iframe>
+  </div>
+
+  <div class="details-box" id="detailsBox" style="display:none">
+    <div class="detail-row"><strong>Nombre:</strong> <span id="dName">—</span></div>
+    <div class="detail-row"><strong>Fecha:</strong> <span id="dDate">—</span></div>
+    <div class="detail-row"><strong>Hora:</strong> <span id="dTime">—</span></div>
+  </div>
+  <a class="wa-btn" id="waBtn" href="#" target="_blank">
+    <span class="wa-icon">💬</span>
+    Confirmar mi cita por WhatsApp
+  </a>
+
+</div>
+
+<div class="testi-wrap">
+  <div class="testi-header">
+    <div class="testi-label">Testimonios</div>
+    <div class="testi-title">Artistas reales, resultados reales</div>
+  </div>
+
+  <div class="tv-item">
+    <div class="tv-label">Juan Botello</div>
+    <div class="tv-container tv-vertical">
+      <iframe src="https://player.vimeo.com/video/1130002172?badge=0&autopause=0&player_id=0&app_id=58479"
+        frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+        title="Juan Botello"></iframe>
+    </div>
+  </div>
+  <div class="tv-item">
+    <div class="tv-label">Creyente.7</div>
+    <div class="tv-container tv-vertical">
+      <iframe src="https://player.vimeo.com/video/1130535480?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Creyente.7"></iframe>
+    </div>
+  </div>
+  <div class="tv-item">
+    <div class="tv-label">Danny Botello</div>
+    <div class="tv-container tv-vertical">
+      <iframe src="https://player.vimeo.com/video/1130033011?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Danny Botello"></iframe>
+    </div>
+  </div>
+  <div class="tv-item">
+    <div class="tv-label">Mar — Estados Unidos</div>
+    <div class="tv-container tv-horizontal">
+      <iframe src="https://player.vimeo.com/video/1130012621?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Mar - Estados Unidos"></iframe>
+    </div>
+  </div>
+  <div class="tv-item">
+    <div class="tv-label">Edgar Cabrales — México</div>
+    <div class="tv-container tv-horizontal">
+      <iframe src="https://player.vimeo.com/video/1130016210?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Edgar Cabrales - México"></iframe>
+    </div>
+  </div>
+  <div class="tv-item" style="margin-bottom:0">
+    <div class="tv-label">Yash — Colombia</div>
+    <div class="tv-container tv-horizontal">
+      <iframe src="https://player.vimeo.com/video/1130042270?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="Yash - Colombia"></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+const WA_NUMBER = '573003930976';
+// Read params from URL
+const params = new URLSearchParams(window.location.search);
+const name  = params.get('name')  || '';
+const date  = params.get('date')  || '';
+const time  = params.get('time')  || '';
+const phone = params.get('phone') || '';
+const inv   = params.get('inv')   || '';
+if(name || date || time) document.getElementById('detailsBox').style.display='block';
+if(name) document.getElementById('dName').textContent = name;
+if(date) document.getElementById('dDate').textContent = date;
+if(time) document.getElementById('dTime').textContent = time;
+const msg = `¡Hola! Quiero confirmar mi cita con Creando Sueños Studio 🎵
+📅 Fecha: ${date}
+⏰ Hora: ${time}
+👤 Nombre: ${name}
+🔖 Agenda: Juanpa
+¡Estoy listo/a para la llamada! 🙌`;
+document.getElementById('waBtn').href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+</script>
+</body>
+</html>
