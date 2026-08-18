@@ -458,14 +458,10 @@ const manualBlockedTimes = {}; // horas HH:MM bloqueadas manualmente en el calen
 const MAX_DAILY = 9999; // sin tope diario: la agenda solo se bloquea por lo que ya esté realmente ocupado en el calendario
 const MIN_HOURS_AHEAD = 4;
 
-// Capacidad de citas simultáneas por horario:
-// - 9:00am - 6:00pm (jornada laboral normal): 2 citas — Jhonfer + Juanpa como segundo closer
-// - Antes de las 9:00am o desde las 6:00pm en adelante (horario extra): 1 cita — exclusivo de Jhonfer
+// Capacidad de citas por horario: 1 (cada closer tiene su propio calendario y landing independientes,
+// así que ya no hace falta compartir cupos por horario como cuando ambos usaban el mismo calendario)
 function getSlotCapacity(slot) {
-  const [h, m] = slot.split(':').map(Number);
-  const mins = h * 60 + m;
-  const isNormalWindow = mins >= 9 * 60 && mins < 18 * 60;
-  return isNormalWindow ? 2 : 1;
+  return 1;
 }
 
 function addSlotRange(slots, startH, startM, endH, endM) {
