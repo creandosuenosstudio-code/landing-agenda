@@ -129,6 +129,8 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .sbtn{background:transparent;color:var(--neon);border:1.5px solid var(--neon);padding:.82rem;border-radius:8px;font-weight:700;font-size:.92rem;cursor:pointer;margin-top:.2rem;transition:all .2s;letter-spacing:.02em}
 .sbtn:hover{background:rgba(0,200,224,.08);box-shadow:0 0 18px rgba(0,200,224,.2)}
 .sbtn:disabled{opacity:.4;cursor:not-allowed}
+.consent-check{display:flex;align-items:flex-start;gap:.6rem;font-size:.76rem;color:var(--text2);line-height:1.5;cursor:pointer;margin-top:.2rem}
+.consent-check input[type=checkbox]{margin-top:.2rem;width:16px;height:16px;flex-shrink:0;accent-color:var(--neon);cursor:pointer}
 /* Success */
 .success-view{display:none;text-align:center;padding:1.8rem 1rem}
 .success-view.show{display:block}
@@ -384,13 +386,15 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
                 <label>¿En qué etapa estás respecto a invertir en tu música? *</label>
                 <select id="fInversion">
                   <option value="">— Selecciona una opción —</option>
-                  <option value="Explorando opciones, sin presupuesto definido">🔍 Estoy explorando, aún no tengo presupuesto definido</option>
                   <option value="Quiero invertir, buscando el equipo correcto">💡 Sé que quiero invertir, busco el equipo correcto</option>
                   <option value="Listo para empezar, quiero conocer planes y precios">🚀 Estoy listo para empezar, quiero conocer planes y precios</option>
                 </select>
               </div>
-              <div class="field"><label>Cuéntanos sobre tu carrera musical</label><textarea id="fCarrera" rows="3" placeholder="Nombre artístico, estilo musical, canciones lanzadas, en qué etapa estás..."></textarea></div>
-              <button class="sbtn" id="submitBtn" onclick="submitBooking()">Confirmar mi llamada →</button>
+              <label class="consent-check">
+                <input type="checkbox" id="fConsent" onchange="toggleSubmitBtn()">
+                <span>Entiendo que Creando Sueños Studio es una empresa de producción musical y marketing con servicios profesionales, y que en esta llamada me presentarán planes y precios según mi proyecto. *</span>
+              </label>
+              <button class="sbtn" id="submitBtn" onclick="submitBooking()" disabled>Confirmar mi llamada →</button>
             </div>
           </div>
           <div class="overlay" id="overlay">
@@ -711,14 +715,21 @@ function selectSlot(slot, el, localLabel){
   form.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+function toggleSubmitBtn(){
+  document.getElementById('submitBtn').disabled = !document.getElementById('fConsent').checked;
+}
+
 async function submitBooking(){
   const name=document.getElementById('fName').value.trim();
   const phoneRaw = document.getElementById('fPhone').value.trim();
   const phone = phoneRaw ? selectedDial.c + phoneRaw.replace(/^0+/,'').replace(/\s/g,'') : '';
   const inv=document.getElementById('fInversion').value;
-  const carrera=document.getElementById('fCarrera').value.trim();
+  const carrera=''; // campo eliminado del formulario
+
+  const consent=document.getElementById('fConsent').checked;
 
   if(!name||!phone||!inv){alert('Por favor completa todos los campos obligatorios (*).');return;}
+  if(!consent){alert('Por favor confirma que entiendes que nuestros servicios tienen costo, marcando la casilla.');return;}
   if(!selDate||!selSlot){alert('Por favor selecciona una fecha y hora.');return;}
 
   const btn=document.getElementById('submitBtn');
