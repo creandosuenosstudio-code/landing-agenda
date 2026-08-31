@@ -97,6 +97,8 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .binfo p{color:var(--text2);font-size:.85rem;line-height:1.72;margin-bottom:.9rem}
 .bdetail{display:flex;align-items:flex-start;gap:.6rem;font-size:.81rem;color:var(--text2);margin:.45rem 0;line-height:1.5}
 .bdetail strong{color:var(--text)}
+.price-box{background:rgba(0,200,224,.09);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1rem;margin:1rem 0 1.1rem;font-size:.88rem;color:var(--text);font-weight:600;line-height:1.5;box-shadow:0 0 16px rgba(0,200,224,.08)}
+.price-box span{display:block}
 /* Calendar */
 .cw{background:var(--bg);border:1px solid var(--border2);border-radius:12px;padding:1.4rem;position:relative;overflow:visible}
 .cw-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
@@ -246,7 +248,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
   <div class="sec-label">El proceso</div>
   <h2>De la idea a la canción publicada</h2>
   <div class="steps">
-    <div class="step"><div class="step-num">1</div><div><h4>Llamada gratuita de 30 min</h4><p>Conversamos sobre tu visión y diseñamos un plan a la medida de tu ministerio.</p></div></div>
+    <div class="step"><div class="step-num">1</div><div><h4>Llamada gratuita de 30 min</h4><p>Conversamos sobre tu visión y diseñamos un plan a la medida de tu ministerio. Contamos con plan de pago desde $800.000 COP mensual (o USD $250 si estás fuera de Colombia).</p></div></div>
     <div class="step"><div class="step-num">2</div><div><h4>Producción profesional</h4><p>Grabamos, producimos y masterizamos tu canción con los más altos estándares de la industria.</p></div></div>
     <div class="step"><div class="step-num">3</div><div><h4>Videoclip y visuales</h4><p>Capturamos la esencia de tu canción en un videoclip 4K de alto impacto.</p></div></div>
     <div class="step"><div class="step-num">4</div><div><h4>Lanzamiento y marketing</h4><p>Llevamos tu música a plataformas digitales con una estrategia de contenido diseñada para crecer.</p></div></div>
@@ -345,6 +347,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
       <div class="binfo">
         <h3>¿Qué vas a lograr en esta llamada?</h3>
         <p>En 30 minutos te contamos exactamente cómo llevamos tu canción desde la grabación hasta el lanzamiento, y diseñamos un plan adaptado a tu ministerio y tu presupuesto.</p>
+        <div class="price-box">💳 Servicios desde <strong>$2.000.000 COP</strong> (USD $700) · planes desde <strong>$800.000 COP</strong> mensual (USD $250)</div>
         <div class="bdetail"><span>⏱️</span><span><strong>30 minutos</strong> · Google Meet</span></div>
         <div class="bdetail"><span>🎯</span><span>Cupos limitados</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes confirmación por WhatsApp</span></div>
@@ -392,7 +395,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
               </div>
               <label class="consent-check">
                 <input type="checkbox" id="fConsent" onchange="toggleSubmitBtn()">
-                <span>Entiendo que Creando Sueños Studio es una empresa de producción musical y marketing con servicios profesionales, y que en esta llamada me presentarán planes y precios según mi proyecto. *</span>
+                <span>Entiendo que Creando Sueños Studio es una empresa de producción musical y marketing con servicios desde $2.000.000 COP (USD $700), y planes de pago desde $800.000 COP mensual (USD $250), y que en esta llamada me presentarán la propuesta según mi proyecto. *</span>
               </label>
               <button class="sbtn" id="submitBtn" onclick="submitBooking()" disabled>Confirmar mi llamada →</button>
             </div>
@@ -436,6 +439,7 @@ function scrollToBooking(){document.getElementById('booking').scrollIntoView({be
 
 const STUDIO_TZ = 'America/Bogota';
 const USER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 
 function fmtTime(t){const[h,m]=t.split(':').map(Number);const ap=h>=12?'pm':'am';const h12=h>12?h-12:h===0?12:h;return`${h12}:${String(m).padStart(2,'0')}${ap}`;}
 
