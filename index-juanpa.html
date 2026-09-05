@@ -283,6 +283,22 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         </div>
       </div>
     </div>
+    <div class="tv-trio" style="margin-top:.8rem">
+      <div class="tv-trio-item">
+        <div class="tv-label">Señor Juan</div>
+        <div class="tv-container tv-vertical">
+          <iframe data-src="https://player.vimeo.com/video/1224243898?badge=0&autopause=0&player_id=0&app_id=58479" src="about:blank"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" title="IMG_2562"></iframe>
+        </div>
+      </div>
+      <div class="tv-trio-item">
+        <div class="tv-label">Jhonfer</div>
+        <div class="tv-container tv-vertical">
+          <iframe data-src="https://player.vimeo.com/video/1224243236?badge=0&autopause=0&player_id=0&app_id=58479" src="about:blank"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" title="JHONFER"></iframe>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -416,7 +432,8 @@ function fitVimeoContainer(iframe, attempt) {
 function initVimeoPlayer() {
   const iframe = document.getElementById('vimeoPlayer');
   if(iframe && iframe.src && iframe.src !== 'about:blank') {
-    fitVimeoContainer(iframe);
+    const player = fitVimeoContainer(iframe);
+    if(player) player.ready().then(() => player.setPlaybackRate(1.2)).catch(()=>{});
   }
 }
 
