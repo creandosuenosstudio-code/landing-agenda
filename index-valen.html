@@ -35,8 +35,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overf
 .hero-sub{color:var(--text2);font-size:1.02rem;line-height:1.75;max-width:560px;margin:0 auto 2.2rem}
 .hero-cta{display:inline-block;background:transparent;color:var(--neon);border:1.5px solid var(--neon);padding:.9rem 2.4rem;border-radius:8px;font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .2s;box-shadow:0 0 18px rgba(0,200,224,.15)}
 .hero-cta:hover{background:rgba(0,200,224,.08);box-shadow:0 0 28px rgba(0,200,224,.3)}
-.hero-cta-secondary{display:inline-block;background:none;color:var(--text2);border:none;padding:.6rem 1rem;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px;transition:color .2s}
-.hero-cta-secondary:hover{color:var(--neon)}
+.hero-cta-secondary{display:inline-block;background:transparent;color:var(--neon);border:1.5px solid var(--neon);padding:.8rem 2rem;border-radius:8px;font-size:.92rem;font-weight:700;cursor:pointer;letter-spacing:.02em;text-decoration:none;transition:all .2s}
+.hero-cta-secondary:hover{background:rgba(0,200,224,.08);box-shadow:0 0 20px rgba(0,200,224,.2)}
 /* VIDEO */
 .video-wrap{max-width:860px;margin:0 auto 0;padding:0 1.5rem}
 .video-container{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;border:1px solid var(--border2);background:#000;box-shadow:0 0 40px rgba(0,200,224,.08)}
@@ -135,6 +135,18 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .sbtn:disabled{opacity:.4;cursor:not-allowed}
 .wa-btn-big{display:inline-flex;align-items:center;justify-content:center;gap:.7rem;background:#25D366;color:#fff;border:none;padding:1.1rem 2.2rem;border-radius:12px;font-size:1.05rem;font-weight:700;cursor:pointer;text-decoration:none;transition:opacity .2s;box-shadow:0 0 24px rgba(37,211,102,.25)}
 .wa-btn-big:hover{opacity:.9}
+.wa-modal-overlay{display:none;position:fixed;inset:0;background:rgba(5,5,10,.85);z-index:999;align-items:center;justify-content:center;padding:1.5rem}
+.wa-modal-overlay.show{display:flex}
+.wa-modal{background:var(--surface);border:1.5px solid var(--border2);border-radius:16px;padding:2rem 1.8rem;max-width:400px;width:100%;text-align:center;box-shadow:0 0 50px rgba(0,200,224,.15)}
+.wa-modal-icon{font-size:2.4rem;margin-bottom:.8rem}
+.wa-modal h3{font-size:1.2rem;font-weight:800;margin-bottom:.7rem}
+.wa-modal p{color:var(--text2);font-size:.87rem;line-height:1.65;margin-bottom:1.4rem}
+.wa-modal p strong{color:var(--text)}
+.wa-modal-confirm{display:block;background:#25D366;color:#fff;border:none;padding:.9rem;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;text-decoration:none;margin-bottom:.7rem;transition:opacity .2s}
+.wa-modal-confirm:hover{opacity:.9}
+.wa-modal-cancel{display:block;width:100%;background:none;color:var(--text2);border:none;padding:.5rem;font-size:.83rem;cursor:pointer;text-decoration:underline}
+.cta-price-label{font-size:.82rem;color:var(--text2);margin-bottom:.7rem;max-width:420px;margin-left:auto;margin-right:auto}
+.cta-hidden{display:none}
 .consent-check{display:flex;align-items:flex-start;gap:.6rem;font-size:.76rem;color:var(--text2);line-height:1.5;cursor:pointer;margin-top:.2rem}
 .consent-check input[type=checkbox]{margin-top:.2rem;width:16px;height:16px;flex-shrink:0;accent-color:var(--neon);cursor:pointer}
 /* Success */
@@ -217,11 +229,12 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
 
 <!-- CTA + SUBTITLE -->
 <div class="hero" style="padding:2rem 2rem 1rem">
-  <a class="hero-cta" href="https://wa.me/573003930976?text=%C2%A1Hola!%20Quiero%20unirme%20a%20la%20comunidad%20Ruta%20500%20%F0%9F%9A%80" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead');}" style="text-decoration:none;display:inline-block">Habla con un asesor para ingresar a la comunidad →</a>
-  <div>
+  <p class="cta-price-label">Nuestra comunidad tiene un costo de $39 USD mensual.</p>
+  <div style="margin-bottom:1.2rem">
     <a class="hero-cta-secondary" href="https://www.skool.com/ruta500/about" target="_blank">Ingresa directamente a la comunidad aquí</a>
   </div>
-  <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0">Te acompañamos en tu camino de cero a tus primeros $500 dólares en la música, junto a cientos de artistas de fe de todo el mundo.</p>
+  <p class="cta-price-label" id="heroCtaWaiting" style="font-weight:700;color:var(--text);font-size:.95rem">En unos instantes podrás hablar con un asesor de nuestro equipo.</p>
+  <button class="hero-cta cta-hidden" id="heroCtaBtn" onclick="openWaModal()">Habla con un asesor →</button>
 </div>
 
 <!-- STATS -->
@@ -325,25 +338,12 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
     <div class="service-item"><span class="service-icon">🌍</span><span>Networking global de artistas de fe</span></div>
   </div>
   <div style="text-align:center;margin-top:2rem">
-    <a class="price-cta" href="https://wa.me/573003930976?text=%C2%A1Hola!%20Quiero%20unirme%20a%20la%20comunidad%20Ruta%20500%20%F0%9F%9A%80" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead');}" style="text-decoration:none;display:inline-block">Habla con un asesor para ingresar a la comunidad</a>
-    <p style="margin-top:1rem;font-size:.82rem;color:var(--text2)"><a href="https://www.skool.com/ruta500/about" target="_blank" style="color:var(--neon);font-weight:600;text-decoration:none">Ingresa directamente a la comunidad aquí →</a></p>
+    <p class="cta-price-label">Nuestra comunidad tiene un costo de $39 USD mensual.</p>
+    <p class="cta-price-label" id="servicesCtaWaiting" style="font-weight:700;color:var(--text);font-size:.95rem">En unos instantes podrás hablar con un asesor de nuestro equipo.</p>
+    <button class="price-cta cta-hidden" id="servicesCtaBtn" onclick="openWaModal()">Habla con un asesor</button>
+    <p style="margin-top:1rem"><a class="hero-cta-secondary" href="https://www.skool.com/ruta500/about" target="_blank">Ingresa directamente a la comunidad aquí →</a></p>
   </div>
 </div>
-
-<hr class="div">
-
-<!-- CASOS DE EXITO -->
-<div class="section">
-  <div class="sec-label">Casos de éxito</div>
-  <h2>Resultados que hablan por sí solos</h2>
-  <p>Artistas de nuestra comunidad ya están viendo resultados reales, tanto en audiencia como en ingresos.</p>
-  <div class="pillars">
-    <img src="caso-exito-lorena-daniel.png" alt="Caso de éxito: de 0 a 68 mil seguidores" style="width:100%;border-radius:12px;border:1px solid var(--border2);box-shadow:0 0 30px rgba(0,200,224,.08)">
-    <img src="caso-exito-monetizacion.png" alt="Caso de éxito: monetización de artistas en 1 mes" style="width:100%;border-radius:12px;border:1px solid var(--border2);box-shadow:0 0 30px rgba(0,200,224,.08)">
-  </div>
-</div>
-
-<hr class="div">
 
 <!-- HABLA CON UN ASESOR -->
 <div class="booking-section" id="booking">
@@ -352,15 +352,25 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
     <h2 style="font-size:1.7rem;font-weight:800;margin-bottom:.4rem;letter-spacing:-.01em">Resuelve tus dudas por WhatsApp</h2>
     <p style="color:var(--text2);font-size:.87rem;margin-bottom:1.5rem">Escríbele directo a nuestro equipo y te ayudamos a decidir si Ruta 500 es para ti — sin necesidad de agendar una llamada.</p>
     <div class="price-box" style="max-width:420px;margin:0 auto 1.7rem">💳 Membresía desde <strong>$39 USD</strong> mensual (o $199 USD al año)</div>
-    <a class="wa-btn-big" href="https://wa.me/573003930976?text=%C2%A1Hola!%20Quiero%20unirme%20a%20la%20comunidad%20Ruta%20500%20%F0%9F%9A%80" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead');}">
-      💬 Hablar con un asesor por WhatsApp
-    </a>
+    <button class="wa-btn-big cta-hidden" id="waBtnBig" onclick="openWaModal()">
+      💬 Hablar con un asesor
+    </button>
   </div>
 </div>
 
 <footer>
   © 2025 Creando Sueños Studio · Cali, Colombia<br>
   Música cristiana para Latinoamérica y el mundo
+<div class="wa-modal-overlay" id="waModalOverlay" onclick="if(event.target===this) closeWaModal()">
+  <div class="wa-modal">
+    <div class="wa-modal-icon">💳</div>
+    <h3>Antes de escribirnos</h3>
+    <p>Ruta 500 es una <strong>membresía paga</strong>, desde <strong>$39 USD mensual</strong> (o $199 USD al año). En el chat te explicamos todo lo que incluye y resolvemos tus dudas.</p>
+    <a class="wa-modal-confirm" href="https://wa.me/573003930976?text=%C2%A1Hola!%20Quiero%20unirme%20a%20la%20comunidad%20Ruta%20500%20%F0%9F%9A%80" target="_blank" onclick="if(typeof fbq!=='undefined'){fbq('track','Lead');} closeWaModal()">Sí, quiero continuar a WhatsApp →</a>
+    <button class="wa-modal-cancel" onclick="closeWaModal()">Cancelar</button>
+  </div>
+</div>
+
 </footer>
 
 <script>
@@ -395,6 +405,23 @@ function initVimeoPlayer() {
 }
 
 function scrollToBooking(){document.getElementById('booking').scrollIntoView({behavior:'smooth'});}
+
+function openWaModal(){ document.getElementById('waModalOverlay').classList.add('show'); }
+function closeWaModal(){ document.getElementById('waModalOverlay').classList.remove('show'); }
+
+// Los botones de contacto permanecen ocultos los primeros 60s, para que la persona alcance a ver el VSL antes de poder escribir
+const ctaButtonIds = ['heroCtaBtn', 'servicesCtaBtn', 'waBtnBig'];
+const ctaWaitingIds = ['heroCtaWaiting', 'servicesCtaWaiting'];
+setTimeout(() => {
+  ctaButtonIds.forEach(id => {
+    const btn = document.getElementById(id);
+    if(btn) btn.classList.remove('cta-hidden');
+  });
+  ctaWaitingIds.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.classList.add('cta-hidden');
+  });
+}, 60000);
 </script>
 
 <script>
