@@ -580,11 +580,11 @@ function submitBooking(){
   const localLabel = fmtLocalTime(convertSlotToLocal(selDate, selSlot));
   const tzLabel = getUserTZLabel();
   const dateStr=`${DAYS[selDate.getDay()]} ${selDate.getDate()} de ${MONTHS[selDate.getMonth()]} de ${selDate.getFullYear()}`;
-  const timeStr=`${localLabel} (${tzLabel}) · ${fmtTime(selSlot)} hora Colombia`;
+  const timeStr=`${localLabel} de mi país · ${fmtTime(selSlot)} hora Colombia`;
 
   const WA_NUMBER = '573003930976';
-  const waMsg = `🕐 ${timeStr} — ${dateStr}
-Hola, soy ${name} y quiero inscribirme a la comunidad Ruta 500. Agendé mi horario de las ${timeStr} 🚀`;
+  const waMsg = `🕐 ${localLabel} de mi país (${fmtTime(selSlot)} hora Colombia) — ${dateStr}
+Hola, soy ${name} y quiero inscribirme a la comunidad Ruta 500. Agendé mi horario para las ${localLabel} de mi país (${fmtTime(selSlot)} hora Colombia) 🚀`;
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waMsg)}`;
 
   if(typeof fbq !== 'undefined') {
