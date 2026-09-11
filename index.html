@@ -583,8 +583,8 @@ function submitBooking(){
   const timeStr=`${localLabel} (${tzLabel}) · ${fmtTime(selSlot)} hora Colombia`;
 
   const WA_NUMBER = '573003930976';
-  const waMsg = `🕐 ${localLabel} — ${dateStr}
-Hola, soy ${name} y quiero inscribirme a la comunidad Ruta 500. Agendé mi horario de las ${localLabel} 🚀`;
+  const waMsg = `🕐 ${timeStr} — ${dateStr}
+Hola, soy ${name} y quiero inscribirme a la comunidad Ruta 500. Agendé mi horario de las ${timeStr} 🚀`;
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waMsg)}`;
 
   if(typeof fbq !== 'undefined') {
