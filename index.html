@@ -588,6 +588,7 @@ Hola, soy ${name} y quiero inscribirme a la comunidad Ruta 500. Agendé mi horar
   const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(waMsg)}`;
 
   if(typeof fbq !== 'undefined') {
+    fbq('track', 'Schedule');
     fbq('track', 'Lead');
   }
 
