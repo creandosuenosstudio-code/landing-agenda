@@ -56,6 +56,13 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 .section>p{color:var(--text2);line-height:1.75;margin-bottom:1.8rem}
 /* PILLARS */
 .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+.fit-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1rem}
+.fit-col{border-radius:12px;padding:1.4rem;border:1px solid var(--border)}
+.fit-no{background:rgba(255,80,80,.05);border-color:rgba(255,80,80,.25)}
+.fit-yes{background:rgba(0,200,224,.06);border-color:var(--border2)}
+.fit-col h3{font-size:.95rem;font-weight:700;margin-bottom:.8rem}
+.fit-col ul{padding-left:1.1rem;margin:0}
+.fit-col li{font-size:.85rem;color:var(--text2);line-height:1.6;margin-bottom:.5rem}
 .pillar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.4rem;transition:border-color .2s}
 .pillar:hover{border-color:var(--border2)}
 .pillar-icon{font-size:1.4rem;margin-bottom:.6rem}
@@ -173,7 +180,7 @@ hr.div{border:none;border-top:1px solid var(--border);margin:0}
 footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--text3);font-size:.77rem;line-height:1.9}
 footer a{color:var(--neon);text-decoration:none}
 @media(max-width:680px){
-.pillars,.testis,.booking-grid,.frow{grid-template-columns:1fr}
+.pillars,.testis,.booking-grid,.frow,.fit-grid{grid-template-columns:1fr}
 .stats-row{flex-direction:column}
 .stat+.stat{border-left:none;border-top:1px solid var(--border2)}
 .slots-grid{grid-template-columns:repeat(3,1fr)}
@@ -202,7 +209,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
 
 <!-- HERO -->
 <div class="hero">
-  <h1>Fórmate como un Artista Cristiano Integral<br><em>logra tus primeros 500 USD en la música 🚀💰</em></h1>
+  <h1>¿Ya grabas música pero no logras vivir de ella?<br><em>Aprende a monetizar tus canciones 🚀💰</em></h1>
 </div>
 
 <!-- VIDEO -->
@@ -216,7 +223,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
 <!-- CTA + SUBTITLE -->
 <div class="hero" style="padding:2rem 2rem 1rem">
   <button class="hero-cta" onclick="scrollToBooking()">Agéndate a la llamada grupal para conocer la comunidad →</button>
-  <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0">Te acompañamos en tu camino de cero a tus primeros $500 dólares en la música, junto a cientos de artistas de fe de todo el mundo.</p>
+  <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0">Este programa es para <strong style="color:var(--text)">cantantes cristianos que ya han grabado y lanzado música</strong> y quieren generar ingresos reales con ella — no es un curso para empezar desde cero.</p>
 </div>
 
 <!-- STATS -->
@@ -238,6 +245,35 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
     <div class="pillar"><div class="pillar-icon">🎥</div><h3>Sesiones en Vivo</h3><p>Masterclass, invitados especiales, preguntas y respuestas, y cafecito de canciones cada semana.</p></div>
     <div class="pillar"><div class="pillar-icon">🤝</div><h3>Comunidad Activa</h3><p>Conecta con más de 100 artistas cristianos de todo el mundo, con retos y dinámicas mensuales.</p></div>
     <div class="pillar"><div class="pillar-icon">💰</div><h3>De Cero a tus Primeros $500</h3><p>Una ruta clara y probada para generar tus primeros ingresos reales como artista.</p></div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ES PARA TI -->
+<div class="section">
+  <div class="sec-label">¿Es esto para ti?</div>
+  <h2>Antes de agendar, sé honesto contigo mismo</h2>
+  <div class="fit-grid">
+    <div class="fit-col fit-no">
+      <h3>❌ Esto NO es para ti si...</h3>
+      <ul>
+        <li>Quieres todo fácil, sin esfuerzo</li>
+        <li>Dices que "no tienes tiempo"</li>
+        <li>Buscas que alguien te "firme" o te haga famoso de la noche a la mañana</li>
+        <li>Todavía no has grabado ni lanzado ninguna canción</li>
+      </ul>
+    </div>
+    <div class="fit-col fit-yes">
+      <h3>✅ Esto SÍ es para ti si...</h3>
+      <ul>
+        <li>Ya lanzaste canciones y sientes que "no pasa nada"</li>
+        <li>No te llega presupuesto ni oportunidades reales</li>
+        <li>No sabes cómo rentabilizar tu música</li>
+        <li>No recibes regalías, o esperas que Spotify te pague solo por subir música</li>
+        <li>Quieres vivir de tu música y servir a Dios de tiempo completo</li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -336,7 +372,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En una sesión en vivo te mostramos cómo funciona Ruta 500 por dentro, el precio, lo que vas a aprender, y casos reales de artistas que ya están dentro.</p>
         <div class="price-box">💳 Podrás acceder con <strong>membresía mensual o anual</strong> — el precio y la oferta especial se revelan en vivo</div>
         <div class="bdetail"><span>🎥</span><span>Clase en vivo · Google Meet</span></div>
-        <div class="bdetail"><span>🗓️</span><span>Lun-Vie · 10am, 12pm, 3pm y 5pm · Sáb · 10am y 12pm</span></div>
+        <div class="bdetail"><span>🗓️</span><span>Lun/Mié/Vie · 10am, 12pm, 3pm y 5pm · Mar/Jue · 3pm, 5pm y 7pm · Sáb · 10am y 12pm</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes el link de acceso por WhatsApp</span></div>
       </div>
       <div>
@@ -357,6 +393,10 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
               <div class="frow">
                 <div class="field"><label>Nombre completo *</label><input type="text" id="fName" placeholder="María González"></div>
               </div>
+              <label class="consent-check">
+                <input type="checkbox" id="fQualified" onchange="toggleSubmitBtn()">
+                <span>Confirmo que ya he grabado y lanzado música, y quiero aprender a generar ingresos reales con ella. *</span>
+              </label>
               <label class="consent-check">
                 <input type="checkbox" id="fConsent" onchange="toggleSubmitBtn()">
                 <span>Entiendo que Ruta 500 es una comunidad de Creando Sueños Studio con membresía paga (mensual o anual), y que al final de esta clase me van a mostrar cómo unirme y el precio de la oferta. *</span>
@@ -451,8 +491,9 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 // Horarios fijos de la clase grupal: lunes a viernes, 10am / 12pm / 3pm / 5pm. Sin cupo límite — es un evento masivo.
 function getSlotsForDate(date) {
   const dow = date.getDay();
-  if(dow >= 1 && dow <= 5) return ['10:00', '12:00', '15:00', '17:00'];
-  if(dow === 6) return ['10:00', '12:00'];
+  if(dow === 1 || dow === 3 || dow === 5) return ['10:00', '12:00', '15:00', '17:00']; // Lunes, Miércoles, Viernes
+  if(dow === 2 || dow === 4) return ['15:00', '17:00', '19:00']; // Martes, Jueves: sin sesiones en la mañana
+  if(dow === 6) return ['10:00', '12:00']; // Sábado
   return [];
 }
 
@@ -566,14 +607,17 @@ function selectSlot(slot, el, localLabel){
 }
 
 function toggleSubmitBtn(){
-  document.getElementById('submitBtn').disabled = !document.getElementById('fConsent').checked;
+  const bothChecked = document.getElementById('fQualified').checked && document.getElementById('fConsent').checked;
+  document.getElementById('submitBtn').disabled = !bothChecked;
 }
 
 function submitBooking(){
   const name=document.getElementById('fName').value.trim();
+  const qualified=document.getElementById('fQualified').checked;
   const consent=document.getElementById('fConsent').checked;
 
   if(!name){alert('Por favor escribe tu nombre completo.');return;}
+  if(!qualified){alert('Este programa es para cantantes que ya han grabado y lanzado música. Por favor confirma la casilla si aplica para ti.');return;}
   if(!consent){alert('Por favor confirma que entiendes que nuestros servicios tienen costo, marcando la casilla.');return;}
   if(!selDate||!selSlot){alert('Por favor selecciona una fecha y hora.');return;}
 
