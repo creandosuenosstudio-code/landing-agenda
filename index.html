@@ -372,7 +372,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En una sesión en vivo te mostramos cómo funciona Ruta 500 por dentro, el precio, lo que vas a aprender, y casos reales de artistas que ya están dentro.</p>
         <div class="price-box">💳 Podrás acceder con <strong>membresía mensual o anual</strong> — el precio y la oferta especial se revelan en vivo</div>
         <div class="bdetail"><span>🎥</span><span>Clase en vivo · Google Meet</span></div>
-        <div class="bdetail"><span>🗓️</span><span>Lun/Vie · 10am, 12pm, 3pm y 5pm · Mar · 3pm, 5pm y 7pm · Mié · 3pm y 5pm · Jue · 10am, 12pm, 3pm, 5pm y 7pm · Sáb · 10am y 12pm</span></div>
+        <div class="bdetail"><span>🗓️</span><span>Lun · 10am, 12pm, 3pm, 5pm y 7pm · Mar · 3pm, 5pm y 7pm · Mié · 3pm, 5pm y 7pm · Jue · 10am, 12pm, 3pm, 5pm y 7pm · Vie · 10am, 12pm, 3pm y 5pm · Sáb · 10am y 12pm</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes el link de acceso por WhatsApp</span></div>
       </div>
       <div>
@@ -491,9 +491,9 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 // Horarios fijos de la clase grupal: lunes a viernes, 10am / 12pm / 3pm / 5pm. Sin cupo límite — es un evento masivo.
 function getSlotsForDate(date) {
   const dow = date.getDay();
-  if(dow === 1) return ['10:00', '12:00', '15:00', '17:00']; // Lunes
+  if(dow === 1) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Lunes
   if(dow === 2) return ['15:00', '17:00', '19:00']; // Martes
-  if(dow === 3) return ['15:00', '17:00']; // Miércoles
+  if(dow === 3) return ['15:00', '17:00', '19:00']; // Miércoles
   if(dow === 4) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Jueves
   if(dow === 5) return ['10:00', '12:00', '15:00', '17:00']; // Viernes
   if(dow === 6) return ['10:00', '12:00']; // Sábado
