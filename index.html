@@ -395,14 +395,11 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
               </div>
               <label class="consent-check">
                 <input type="checkbox" id="fQualified" onchange="toggleSubmitBtn()">
-                <span>Confirmo que ya he grabado y lanzado música, y quiero aprender a generar ingresos reales con ella. *</span>
-              </label>
-              <label class="consent-check">
-                <input type="checkbox" id="fConsent" onchange="toggleSubmitBtn()">
-                <span>Entiendo que Ruta 500 es una comunidad de Creando Sueños Studio con membresía paga (mensual o anual), y que al final de esta clase me van a mostrar cómo unirme y el precio de la oferta. *</span>
+                <span>Ya grabé y lancé música, y entiendo que Ruta 500 es una comunidad con membresía paga que me presentarán al final de la clase. *</span>
               </label>
               <p style="font-size:.78rem;color:var(--neon);background:rgba(0,200,224,.08);border:1px solid var(--border2);border-radius:8px;padding:.6rem .8rem;line-height:1.5;margin-bottom:.2rem">⚠️ Al continuar, te vamos a redirigir a WhatsApp con un mensaje ya escrito. <strong>Debes enviarlo para confirmar tu cupo</strong> — si no lo envías, no quedará confirmada tu inscripción.</p>
-              <button class="sbtn" id="submitBtn" onclick="submitBooking()" disabled>Inscribirme a la clase →</button>
+              <button class="sbtn" id="submitBtn" onclick="submitBooking()" disabled>Inscribirme y confirmar por WhatsApp →</button>
+              <p id="submitHint" style="font-size:.74rem;color:var(--text2);text-align:center;margin-top:.45rem">Marca la casilla para continuar</p>
             </div>
           </div>
         </div>
@@ -454,6 +451,23 @@ const MONTHS=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto',
 const DAYS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 
 function scrollToBooking(){document.getElementById('booking').scrollIntoView({behavior:'smooth'});}
+
+// Medición del embudo (eventos personalizados del pixel, una vez por visita):
+// VerCalendario → ElegirDia → ElegirHorario → Schedule/Lead (al enviar el formulario)
+const _funnelSent = {};
+function trackFunnel(name){
+  if(_funnelSent[name]) return;
+  _funnelSent[name] = true;
+  try { if(typeof fbq !== 'undefined') fbq('trackCustom', name); } catch(e) {}
+}
+(function(){
+  const sec = document.getElementById('booking');
+  if(!sec || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{ if(en.isIntersecting){ trackFunnel('VerCalendario'); io.disconnect(); } });
+  }, {threshold: 0.35});
+  io.observe(sec);
+})();
 
 const STUDIO_TZ = 'America/Bogota';
 const USER_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -550,6 +564,7 @@ function changeMonth(dir){
 }
 
 function selectDay(date){
+  trackFunnel('ElegirDia');
   selDate=date; selSlot=null;
   document.getElementById('bForm').classList.remove('show');
   renderCalendar();
@@ -559,8 +574,7 @@ function selectDay(date){
   const grid=document.getElementById('slotsGrid');
   wrap.style.display='block';
 
-  const tzLabel = getUserTZLabel();
-  title.textContent=`${DAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]} · Hora ${tzLabel}`;
+  title.textContent=`${DAYS[date.getDay()]} ${date.getDate()} de ${MONTHS[date.getMonth()]} · Horarios en tu hora local`;
 
   grid.innerHTML='';
   const allSlots = getSlotsForDate(date);
@@ -598,25 +612,26 @@ function selectSlot(slot, el, localLabel){
   document.querySelectorAll('.slot').forEach(s=>s.classList.remove('sel'));
   el.classList.add('sel');
   const tzLabel = getUserTZLabel();
-  document.getElementById('selSummary').textContent=`📅 ${DAYS[selDate.getDay()]} ${selDate.getDate()} de ${MONTHS[selDate.getMonth()]} · ${localLabel} (${tzLabel})`;
+  document.getElementById('selSummary').textContent=`📅 ${DAYS[selDate.getDay()]} ${selDate.getDate()} de ${MONTHS[selDate.getMonth()]} · ${localLabel} · tu hora local`;
+  trackFunnel('ElegirHorario');
   const form=document.getElementById('bForm');
   form.classList.add('show');
   form.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function toggleSubmitBtn(){
-  const bothChecked = document.getElementById('fQualified').checked && document.getElementById('fConsent').checked;
-  document.getElementById('submitBtn').disabled = !bothChecked;
+  const checked = document.getElementById('fQualified').checked;
+  document.getElementById('submitBtn').disabled = !checked;
+  const hint = document.getElementById('submitHint');
+  if(hint) hint.style.display = checked ? 'none' : 'block';
 }
 
 function submitBooking(){
   const name=document.getElementById('fName').value.trim();
   const qualified=document.getElementById('fQualified').checked;
-  const consent=document.getElementById('fConsent').checked;
 
   if(!name){alert('Por favor escribe tu nombre completo.');return;}
-  if(!qualified){alert('Este programa es para cantantes que ya han grabado y lanzado música. Por favor confirma la casilla si aplica para ti.');return;}
-  if(!consent){alert('Por favor confirma que entiendes que nuestros servicios tienen costo, marcando la casilla.');return;}
+  if(!qualified){alert('Este programa es para cantantes que ya han grabado y lanzado música, y la comunidad tiene membresía paga. Por favor marca la casilla si aplica para ti.');return;}
   if(!selDate||!selSlot){alert('Por favor selecciona una fecha y hora.');return;}
 
   const localLabel = fmtLocalTime(convertSlotToLocal(selDate, selSlot));
