@@ -372,7 +372,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En una sesión en vivo te mostramos cómo funciona Ruta 500 por dentro, el precio, lo que vas a aprender, y casos reales de artistas que ya están dentro.</p>
         <div class="price-box">💳 Podrás acceder con <strong>membresía mensual o anual</strong> — el precio y la oferta especial se revelan en vivo</div>
         <div class="bdetail"><span>🎥</span><span>Clase en vivo · Google Meet</span></div>
-        <div class="bdetail"><span>🗓️</span><span>Lun · 10am, 12pm, 3pm, 5pm y 7pm · Mar · 3pm, 5pm y 7pm · Mié · 3pm, 5pm y 7pm · Jue · 10am, 12pm, 3pm, 5pm y 7pm · Vie · 10am, 12pm, 3pm, 5pm y 7pm · Sáb · 10am y 12pm</span></div>
+        <div class="bdetail"><span>🗓️</span><span>Lun a Vie · 10am, 12pm y 8pm · Sáb · 10am y 12pm · Dom · 4pm y 8pm (hora Colombia)</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes el link de acceso por WhatsApp</span></div>
       </div>
       <div>
@@ -488,24 +488,19 @@ function addSlotRange(slots, startH, startM, endH, endM) {
   }
 }
 
-// Horarios fijos de la clase grupal: lunes a viernes, 10am / 12pm / 3pm / 5pm. Sin cupo límite — es un evento masivo.
+// Horarios fijos de la clase grupal (hora Colombia). Sin cupo límite — es un evento masivo.
+// Lunes a viernes: 10am, 12pm y 8pm · Sábado: 10am y 12pm · Domingo: 4pm y 8pm
 function getSlotsForDate(date) {
   const dow = date.getDay();
-  if(dow === 1) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Lunes
-  if(dow === 2) return ['15:00', '17:00', '19:00']; // Martes
-  if(dow === 3) return ['15:00', '17:00', '19:00']; // Miércoles
-  if(dow === 4) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Jueves
-  if(dow === 5) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Viernes
+  if(dow >= 1 && dow <= 5) return ['10:00', '12:00', '20:00']; // Lunes a viernes
   if(dow === 6) return ['10:00', '12:00']; // Sábado
-  return []; // Domingo cerrado
+  return ['16:00', '20:00']; // Domingo
 }
 
 function isSlotAvailable(date, slot) {
-  const [h, m] = slot.split(':').map(Number);
-  const slotTime = new Date(date);
-  slotTime.setHours(h, m, 0, 0);
-  const now = new Date();
-  const diffHours = (slotTime - now) / (1000 * 60 * 60);
+  // El horario es en hora Colombia: se compara el instante real, no la hora local del visitante
+  const slotTime = convertSlotToLocal(date, slot);
+  const diffHours = (slotTime - new Date()) / (1000 * 60 * 60);
   return diffHours >= MIN_HOURS_AHEAD;
 }
 
@@ -519,12 +514,12 @@ function renderCalendar(){
   for(let i=0;i<first;i++){const el=document.createElement('div');el.className='cd';grid.appendChild(el);}
   const dim=new Date(y,m+1,0).getDate();
   const today=new Date();today.setHours(0,0,0,0);
-  // Calcular los próximos 2 días hábiles (lunes a sábado, no domingos)
+  // Se puede agendar hoy y los 2 días siguientes (todos los días hay clases, domingo incluido)
   const validDays = [];
   let check = new Date(today);
   // empezar desde hoy (no desde mañana)
-  while(validDays.length < 2) {
-    if(check.getDay() !== 0) validDays.push(check.toDateString());
+  while(validDays.length < 3) {
+    validDays.push(check.toDateString());
     check.setDate(check.getDate() + 1);
   }
   for(let d=1;d<=dim;d++){
@@ -533,7 +528,7 @@ function renderCalendar(){
     el.textContent=d;
     const dow=date.getDay();
     const isValid = validDays.includes(date.toDateString());
-    if(!isValid||dow===0){el.className='cd past';}
+    if(!isValid){el.className='cd past';}
     else{el.className='cd avail';if(selDate&&date.toDateString()===selDate.toDateString())el.classList.add('sel');el.onclick=()=>selectDay(date);}
     grid.appendChild(el);
   }
