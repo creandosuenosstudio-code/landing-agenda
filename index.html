@@ -223,7 +223,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
 <!-- CTA + SUBTITLE -->
 <div class="hero" style="padding:2rem 2rem 1rem">
   <button class="hero-cta" onclick="scrollToBooking()">Agéndate a la llamada grupal para conocer la comunidad →</button>
-  <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0">Este programa es para <strong style="color:var(--text)">cantantes cristianos que ya han grabado y lanzado música</strong> y quieren generar ingresos reales con ella — no es un curso para empezar desde cero.</p>
+  <p class="hero-sub" style="margin-top:1.2rem;margin-bottom:0">Este programa es para <strong style="color:var(--text)">cantantes y artistas cristianos</strong> que quieren generar ingresos reales con su música y llegar a más personas — ya tengas canciones lanzadas o estés dando tus primeros pasos.</p>
 </div>
 
 <!-- STATS -->
@@ -261,13 +261,14 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <li>Quieres todo fácil, sin esfuerzo</li>
         <li>Dices que "no tienes tiempo"</li>
         <li>Buscas que alguien te "firme" o te haga famoso de la noche a la mañana</li>
-        <li>Todavía no has grabado ni lanzado ninguna canción</li>
+        <li>No cantas ni tienes un interés real en dedicarte a la música cristiana</li>
       </ul>
     </div>
     <div class="fit-col fit-yes">
       <h3>✅ Esto SÍ es para ti si...</h3>
       <ul>
         <li>Ya lanzaste canciones y sientes que "no pasa nada"</li>
+        <li>Estás empezando tu carrera musical y quieres hacerlo bien desde el inicio</li>
         <li>No te llega presupuesto ni oportunidades reales</li>
         <li>No sabes cómo rentabilizar tu música</li>
         <li>No recibes regalías, o esperas que Spotify te pague solo por subir música</li>
@@ -395,7 +396,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
               </div>
               <label class="consent-check">
                 <input type="checkbox" id="fQualified" onchange="toggleSubmitBtn()">
-                <span>Ya grabé y lancé música, y entiendo que Ruta 500 es una comunidad con membresía paga que me presentarán al final de la clase. *</span>
+                <span>Soy cantante o artista cristiano, y entiendo que Ruta 500 es una comunidad con membresía paga que me presentarán al final de la clase. *</span>
               </label>
               <p style="font-size:.78rem;color:var(--neon);background:rgba(0,200,224,.08);border:1px solid var(--border2);border-radius:8px;padding:.6rem .8rem;line-height:1.5;margin-bottom:.2rem">⚠️ Al continuar, te vamos a redirigir a WhatsApp con un mensaje ya escrito. <strong>Debes enviarlo para confirmar tu cupo</strong> — si no lo envías, no quedará confirmada tu inscripción.</p>
               <button class="sbtn" id="submitBtn" onclick="submitBooking()" disabled>Inscribirme y confirmar por WhatsApp →</button>
@@ -631,7 +632,7 @@ function submitBooking(){
   const qualified=document.getElementById('fQualified').checked;
 
   if(!name){alert('Por favor escribe tu nombre completo.');return;}
-  if(!qualified){alert('Este programa es para cantantes que ya han grabado y lanzado música, y la comunidad tiene membresía paga. Por favor marca la casilla si aplica para ti.');return;}
+  if(!qualified){alert('Este programa es para cantantes y artistas cristianos, y la comunidad tiene membresía paga. Por favor marca la casilla si aplica para ti.');return;}
   if(!selDate||!selSlot){alert('Por favor selecciona una fecha y hora.');return;}
 
   const localLabel = fmtLocalTime(convertSlotToLocal(selDate, selSlot));
