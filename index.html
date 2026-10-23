@@ -373,7 +373,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En una sesión en vivo te mostramos cómo funciona Ruta 500 por dentro, el precio, lo que vas a aprender, y casos reales de artistas que ya están dentro.</p>
         <div class="price-box">💳 Podrás acceder con <strong>membresía mensual o anual</strong> — el precio y la oferta especial se revelan en vivo</div>
         <div class="bdetail"><span>🎥</span><span>Clase en vivo · Google Meet</span></div>
-        <div class="bdetail"><span>🗓️</span><span>Lun a Vie · 10am, 12pm y 8pm · Sáb · 10am y 12pm · Dom · 4pm y 8pm (hora Colombia)</span></div>
+        <div class="bdetail"><span>🗓️</span><span>Lun a Vie · 10am, 12pm y 8pm · Sáb · 10am y 12pm · Dom · 8pm (hora Colombia)</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes el link de acceso por WhatsApp</span></div>
       </div>
       <div>
@@ -509,7 +509,7 @@ function getSlotsForDate(date) {
   const dow = date.getDay();
   if(dow >= 1 && dow <= 5) return ['10:00', '12:00', '20:00']; // Lunes a viernes
   if(dow === 6) return ['10:00', '12:00']; // Sábado
-  return ['16:00', '20:00']; // Domingo
+  return ['20:00']; // Domingo
 }
 
 function isSlotAvailable(date, slot) {
