@@ -506,7 +506,7 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 // Horarios fijos de la clase grupal (hora Colombia). Sin cupo límite — es un evento masivo.
 // Lunes a viernes: 10am, 12pm, 3pm, 5pm y 7pm · Sábado: 10am y 12pm · Domingo: sin clases
 // Fechas bloqueadas (sin clases), formato AAAA-MM-DD. Agrega aquí días que no puedas atender.
-const BLOCKED_DATES = ['2026-10-26'];
+const BLOCKED_DATES = ['2026-10-26', '2026-11-02'];
 function isBlockedDate(date){
   const k = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
   return BLOCKED_DATES.includes(k);
