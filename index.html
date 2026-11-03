@@ -373,7 +373,7 @@ src="https://www.facebook.com/tr?id=1003567662262072&ev=PageView&noscript=1"
         <p>En una sesión en vivo te mostramos cómo funciona Ruta 500 por dentro, el precio, lo que vas a aprender, y casos reales de artistas que ya están dentro.</p>
         <div class="price-box">💳 Podrás acceder con <strong>membresía mensual o anual</strong> — el precio y la oferta especial se revelan en vivo</div>
         <div class="bdetail"><span>🎥</span><span>Clase en vivo · Google Meet</span></div>
-        <div class="bdetail"><span>🗓️</span><span>Lun a Vie · 10am, 12pm, 3pm, 5pm y 7pm · Sáb · 10am y 12pm (hora Colombia)</span></div>
+        <div class="bdetail"><span>🗓️</span><span>Lun, Mar, Jue y Vie · 10am, 12pm, 3pm, 5pm y 7pm · Mié · 10am, 12pm y 7pm · Sáb · 10am y 12pm (hora Colombia)</span></div>
         <div class="bdetail"><span>📲</span><span>Recibes el link de acceso por WhatsApp</span></div>
       </div>
       <div>
@@ -504,7 +504,7 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 }
 
 // Horarios fijos de la clase grupal (hora Colombia). Sin cupo límite — es un evento masivo.
-// Lunes a viernes: 10am, 12pm, 3pm, 5pm y 7pm · Sábado: 10am y 12pm · Domingo: sin clases
+// Lunes, martes, jueves y viernes: 10am, 12pm, 3pm, 5pm y 7pm · Miércoles: 10am, 12pm y 7pm · Sábado: 10am y 12pm · Domingo: sin clases
 // Fechas bloqueadas (sin clases), formato AAAA-MM-DD. Agrega aquí días que no puedas atender.
 const BLOCKED_DATES = ['2026-10-26', '2026-11-02'];
 function isBlockedDate(date){
@@ -514,7 +514,8 @@ function isBlockedDate(date){
 function getSlotsForDate(date) {
   if(isBlockedDate(date)) return [];
   const dow = date.getDay();
-  if(dow >= 1 && dow <= 5) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Lunes a viernes
+  if(dow === 3) return ['10:00', '12:00', '19:00']; // Miércoles
+  if(dow >= 1 && dow <= 5) return ['10:00', '12:00', '15:00', '17:00', '19:00']; // Lunes, martes, jueves y viernes
   if(dow === 6) return ['10:00', '12:00']; // Sábado
   return []; // Domingo: sin clases
 }
