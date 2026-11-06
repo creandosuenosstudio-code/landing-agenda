@@ -507,11 +507,20 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 // Lunes, martes, jueves y viernes: 10am, 12pm, 3pm, 5pm y 7pm · Miércoles: 10am, 12pm y 7pm · Sábado: 10am y 12pm · Domingo: sin clases
 // Fechas bloqueadas (sin clases), formato AAAA-MM-DD. Agrega aquí días que no puedas atender.
 const BLOCKED_DATES = ['2026-10-26', '2026-11-02'];
+// Horarios bloqueados solo en una fecha: { 'AAAA-MM-DD': ['HH:MM', ...] }
+const BLOCKED_SLOTS = { '2026-11-07': ['12:00'] };
+function dateKey(date){
+  return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+}
 function isBlockedDate(date){
-  const k = date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
-  return BLOCKED_DATES.includes(k);
+  return BLOCKED_DATES.includes(dateKey(date));
 }
 function getSlotsForDate(date) {
+  const all = getBaseSlotsForDate(date);
+  const blocked = BLOCKED_SLOTS[dateKey(date)] || [];
+  return all.filter(s => !blocked.includes(s));
+}
+function getBaseSlotsForDate(date) {
   if(isBlockedDate(date)) return [];
   const dow = date.getDay();
   if(dow === 3) return ['10:00', '12:00', '19:00']; // Miércoles
