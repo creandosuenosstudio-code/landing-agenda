@@ -508,7 +508,7 @@ function addSlotRange(slots, startH, startM, endH, endM) {
 // Fechas bloqueadas (sin clases), formato AAAA-MM-DD. Agrega aquí días que no puedas atender.
 const BLOCKED_DATES = ['2026-10-26', '2026-11-02', '2026-11-16'];
 // Horarios bloqueados solo en una fecha: { 'AAAA-MM-DD': ['HH:MM', ...] }
-const BLOCKED_SLOTS = { '2026-11-07': ['12:00'] };
+const BLOCKED_SLOTS = { '2026-11-07': ['12:00'], '2026-11-20': ['19:00'] };
 function dateKey(date){
   return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
 }
